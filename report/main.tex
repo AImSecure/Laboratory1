@@ -1,25 +1,48 @@
-% main.tex
+% =============================================================================
+% LABORATORY 1 REPORT - MAIN DOCUMENT
+% =============================================================================
+% Authors: Andrea Botticella, Elia Innocenti, Simone Romano
+% Institution: Politecnico di Torino
+% Course: AI and Cybersecurity
+% =============================================================================
 
+% =============================================================================
+% DOCUMENT CLASS CONFIGURATION
+% =============================================================================
 % Use the ACM large 1-column format class from your template directory
 \documentclass[acmlarge]{template/column-format-template/acmart}
 
-% Set up any additional package imports here
+% =============================================================================
+% PACKAGE IMPORTS
+% =============================================================================
+
+% --- Graphics and Visual Elements ---
 \usepackage{graphicx}     % For including graphics
+\usepackage{xcolor}       % For colors
+\usepackage{subcaption}   % For subfigures and subtables
+
+% --- Math and Algorithms ---
 \usepackage{amsmath}      % For advanced math formatting
 \usepackage{algorithm}    % For algorithm pseudocode
 \usepackage{algorithmic}  % For algorithm pseudocode
+
+% --- Tables and Lists ---
 \usepackage{booktabs}     % For professional tables
-\usepackage{listings}     % For code listings
-\usepackage{subcaption}   % For subfigures
-\usepackage{url}          % For URLs in bibliography
-\usepackage{titlesec}     % For custom formatting
-\usepackage{xcolor}       % For colors
-\usepackage{listings}     % For code snippets
-\usepackage{subcaption}   % For subfigures and subtables
-\usepackage{hyperref}     % For links and references
 \usepackage{enumitem}     % For customizing list formatting and styles
 
-% Custom settings for listings
+% --- Code and Text Formatting ---
+\usepackage{listings}     % For code listings and snippets
+\usepackage{titlesec}     % For custom section formatting
+\usepackage{url}          % For URLs in bibliography
+
+% --- Navigation and References ---
+\usepackage{hyperref}     % For links and references (load last)
+
+% =============================================================================
+% CUSTOM SETTINGS AND CONFIGURATIONS
+% =============================================================================
+
+% --- Code Listings Configuration ---
 \lstset{
     language=Python,                    % Sets the programming language for syntax highlighting
     basicstyle=\footnotesize\ttfamily,  % Sets the font style and size for the code
@@ -31,7 +54,7 @@
     % numberstyle=\tiny,                % Font size/style for line numbers
     % stepnumber=1,                     % Line number increment (e.g., every 1 line gets a number)
     % numbersep=5pt,                    % Distance between the line numbers and the code
-    linewidth=0.95\linewidth,           % Code block occupies 80% of text width
+    linewidth=0.95\linewidth,           % Code block occupies 95% of text width
     xleftmargin=-20pt,                  % Moves the listing 20pt closer to the left margin
     xrightmargin=5pt,                   % Optional: Adds extra padding on the right
     breaklines=true,                    % Automatically breaks long lines to fit within the page width
@@ -40,8 +63,8 @@
     belowcaptionskip=8pt,               % Adjusts the space below the caption to 8pt
 }
 
-% Custom settings for hyperref
-% FIXME: update and fix
+% --- Hyperref Configuration ---
+% FIXME: update and fix hyperref settings for final version
 \hypersetup{
     colorlinks=false,            % Disable colored links (use borders instead)
     linkbordercolor=1 0 0,       % Red border around internal links
@@ -51,15 +74,21 @@
     pdfpagemode=UseOutlines,     % Open the PDF with bookmarks visible
 }
 
+% --- Custom Commands ---
 \newcommand{\cooltext}[1]{%
   \texttt{\colorbox{gray!15}{\textcolor{black}{#1}}}%
 }
 
+% --- List Formatting Configuration ---
 % Configure bullet points with customized size
 \setlist[itemize,1]{label={\Large\textbullet}} % First level: larger bullet point
 \setlist[itemize,2]{label={\Large\textbullet}, leftmargin=2em} % Second level: larger bullet point and indented by 2em
 
-% Remove ACM-specific references and permissions
+% =============================================================================
+% ACM TEMPLATE CUSTOMIZATION
+% =============================================================================
+
+% --- Remove ACM-specific Elements ---
 \setcopyright{none} % Disable copyright
 \makeatletter
 \@printpermissionfalse
@@ -71,54 +100,60 @@
 \settopmatter{printacmref=false}
 \renewcommand\footnotetextcopyrightpermission[1]{}
 
-% Optional: Plain page style
+% --- Page Style ---
 \pagestyle{plain}
 
-% TODO: check
-% \BibTeX command to typeset BibTeX logo in the docs
+% --- BibTeX Command Definition ---
+% TODO: verify if this is needed for final document
 \AtBeginDocument{%
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
-% TODO: check
-% Define paths for graphics and bibliography
-% \graphicspath{{template/column-format-template/}}
-% \bibliographystyle{template/column-format-template/ACM-Reference-Format}
+% =============================================================================
+% FUTURE CONFIGURATION OPTIONS
+% =============================================================================
 
-% TODO: check
-% \graphicspath{{figures/}}                 % Single directory
-% \graphicspath{{fig1/}{fig2/}}             % Multiple directories
+% --- Path Configuration ---
+\newcommand{\sectionspath}{sections/}   % Path to sections directory
+\newcommand{\appendixpath}{appendix/}   % Path to appendix directory
+\newcommand{\imagespath}{images/}       % Path to images directory
+\newcommand{\bibliopath}{bibliography/} % Path to bibliography directory
 
-% TODO: check
-% \bibliographystyle{ACM-Reference-Format}  % Standard ACM format
-% \bibliographystyle{plain}                 % Basic format
-% \bibliographystyle{ieeetr}                % IEEE format
-
-% Optional: Customize section titles
+% --- Custom Section Title Formatting ---
+% TODO: uncomment if custom section formatting is desired
 % \titleformat{\section}
 %   {\LARGE}                      % Large, not bold
 %   {\thesection}                 % Section number
 %   {0.5em}                       % Space between number and title
 %   {}                            % Code before title body
 
-% Optional: Customize subsection titles
+% --- Custom Subsection Title Formatting ---
+% TODO: uncomment if custom subsection formatting is desired
 % \titleformat{\subsection}
 %   {\Large}                      % Large (but smaller than section), not bold
 %   {\thesubsection}              % Subsection number
 %   {0.5em}                       % Space between number and title
 %   {}                            % Code before title body
 
-% Optional: Adjust spacing before and after sections
+% --- Section Spacing Adjustments ---
+% TODO: uncomment if custom spacing is needed
 % \titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 % \titlespacing*{\subsection}{0pt}{2.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
+% =============================================================================
+% DOCUMENT CONTENT
+% =============================================================================
+
 \begin{document}
 
-% Title
+% =============================================================================
+% DOCUMENT METADATA
+% =============================================================================
+
+% --- Title ---
 \title{Laboratory 1 Report}
 
-% Define authors and their affiliations
-
+% --- Author Information ---
 \author{Andrea Botticella}
 \authornote{The authors collaborated closely in developing this project.}
 \email{andrea.botticella@studenti.polito.it}
@@ -146,11 +181,14 @@
   \country{Italy}
 }
 
-% Short author list for page headers
+% --- Header Information ---
 \renewcommand{\shortauthors}{Botticella, Innocenti, and Romano}
 
-% CCS Concepts
-% FIXME: update and check FOR EACH REPORT
+% =============================================================================
+% ACM CCS CONCEPTS
+% =============================================================================
+% FIXME: update and verify CCS concepts for each report
+
 \begin{CCSXML}
 <ccs2012>
    <concept>
@@ -186,7 +224,7 @@
 </ccs2012>
 \end{CCSXML}
 
-% FIXME: update and check FOR EACH REPORT
+% FIXME: update and verify CCS descriptions for each report
 \ccsdesc[500]{Computing methodologies~Supervised learning by classification}
 \ccsdesc[500]{Computing methodologies~Unsupervised learning}
 \ccsdesc[400]{Computing methodologies~Natural language processing}
@@ -194,32 +232,45 @@
 \ccsdesc[300]{Computing methodologies~Machine learning approaches}
 \ccsdesc[200]{Security and privacy~Intrusion detection systems}
 
-% Keywords
-% FIXME: update and check FOR EACH REPORT
+% --- Keywords ---
+% FIXME: update and verify keywords for each report
 \keywords{Machine learning, supervised learning, unsupervised learning, language models, text classification, clustering, intent classification, SSH shell attacks, security log analysis}
 
-\input{sections/abstract}
+% =============================================================================
+% DOCUMENT STRUCTURE
+% =============================================================================
 
+% --- Abstract ---
+\input{\sectionspath abstract}
+
+% --- Title Page ---
 \maketitle
 
-% Table of Contents
-% TODO: check
+% --- Table of Contents ---
+% TODO: verify if ToC is needed for final document
 \setcounter{tocdepth}{1}
 \tableofcontents
 
-% Include the sections you have in your sections directory
-\input{sections/introduction}
-\input{sections/conclusion}
+% --- Main Content Sections ---
+\input{\sectionspath introduction}
+\input{\sectionspath conclusion}
 
-% Include the appendix
+% --- Appendix ---
 \clearpage
 \appendix
-\input{appendix/appendix}
+\input{\appendixpath appendix}
 
-% Include the bibliography file
-% TODO: check
+% =============================================================================
+% BIBLIOGRAPHY
+% =============================================================================
+% TODO: verify bibliography configuration for final document
+
 \nocite{*} % Include all references from the .bib file
 \bibliographystyle{template/ACM-Reference-Format}
-\bibliography{bibliography/references}
+\bibliography{\bibliopath references}
+
+% =============================================================================
+% END OF DOCUMENT
+% =============================================================================
 
 \end{document}
