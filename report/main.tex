@@ -1,0 +1,225 @@
+% main.tex
+
+% Use the ACM large 1-column format class from your template directory
+\documentclass[acmlarge]{template/column-format-template/acmart}
+
+% Set up any additional package imports here
+\usepackage{graphicx}     % For including graphics
+\usepackage{amsmath}      % For advanced math formatting
+\usepackage{algorithm}    % For algorithm pseudocode
+\usepackage{algorithmic}  % For algorithm pseudocode
+\usepackage{booktabs}     % For professional tables
+\usepackage{listings}     % For code listings
+\usepackage{subcaption}   % For subfigures
+\usepackage{url}          % For URLs in bibliography
+\usepackage{titlesec}     % For custom formatting
+\usepackage{xcolor}       % For colors
+\usepackage{listings}     % For code snippets
+\usepackage{subcaption}   % For subfigures and subtables
+\usepackage{hyperref}     % For links and references
+\usepackage{enumitem}     % For customizing list formatting and styles
+
+% Custom settings for listings
+\lstset{
+    language=Python,                    % Sets the programming language for syntax highlighting
+    basicstyle=\footnotesize\ttfamily,  % Sets the font style and size for the code
+    keywordstyle=\color{blue},          % Style applied to keywords (e.g., "def", "import")
+    commentstyle=\color{gray},          % Style applied to comments (e.g., lines starting with "#")
+    stringstyle=\color{red},            % Style applied to strings (e.g., text within quotes)
+    % backgroundcolor=\color{gray!10},  % Background color for the code block (light gray in this case)
+    % numbers=left,                     % Displays line numbers on the left side of the code block
+    % numberstyle=\tiny,                % Font size/style for line numbers
+    % stepnumber=1,                     % Line number increment (e.g., every 1 line gets a number)
+    % numbersep=5pt,                    % Distance between the line numbers and the code
+    linewidth=0.95\linewidth,           % Code block occupies 80% of text width
+    xleftmargin=-20pt,                  % Moves the listing 20pt closer to the left margin
+    xrightmargin=5pt,                   % Optional: Adds extra padding on the right
+    breaklines=true,                    % Automatically breaks long lines to fit within the page width
+    captionpos=b,                       % Places the caption below the code block
+    abovecaptionskip=5pt,               % Adjusts the space above the caption to 5pt
+    belowcaptionskip=8pt,               % Adjusts the space below the caption to 8pt
+}
+
+% Custom settings for hyperref
+% FIXME: update and fix
+\hypersetup{
+    colorlinks=false,            % Disable colored links (use borders instead)
+    linkbordercolor=1 0 0,       % Red border around internal links
+    citebordercolor=0 1 0,       % Green border around citations
+    urlbordercolor=0 1 1,        % Cyan border around URLs
+    filebordercolor=0 .5 .5,     % Teal border around file links
+    pdfpagemode=UseOutlines,     % Open the PDF with bookmarks visible
+}
+
+\newcommand{\cooltext}[1]{%
+  \texttt{\colorbox{gray!15}{\textcolor{black}{#1}}}%
+}
+
+% Configure bullet points with customized size
+\setlist[itemize,1]{label={\Large\textbullet}} % First level: larger bullet point
+\setlist[itemize,2]{label={\Large\textbullet}, leftmargin=2em} % Second level: larger bullet point and indented by 2em
+
+% Remove ACM-specific references and permissions
+\setcopyright{none} % Disable copyright
+\makeatletter
+\@printpermissionfalse
+\@printcopyrightfalse
+\@acmownedfalse
+\makeatother
+
+% Remove ACM reference format
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+% Optional: Plain page style
+\pagestyle{plain}
+
+% TODO: check
+% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+% TODO: check
+% Define paths for graphics and bibliography
+% \graphicspath{{template/column-format-template/}}
+% \bibliographystyle{template/column-format-template/ACM-Reference-Format}
+
+% TODO: check
+% \graphicspath{{figures/}}                 % Single directory
+% \graphicspath{{fig1/}{fig2/}}             % Multiple directories
+
+% TODO: check
+% \bibliographystyle{ACM-Reference-Format}  % Standard ACM format
+% \bibliographystyle{plain}                 % Basic format
+% \bibliographystyle{ieeetr}                % IEEE format
+
+% Optional: Customize section titles
+% \titleformat{\section}
+%   {\LARGE}                      % Large, not bold
+%   {\thesection}                 % Section number
+%   {0.5em}                       % Space between number and title
+%   {}                            % Code before title body
+
+% Optional: Customize subsection titles
+% \titleformat{\subsection}
+%   {\Large}                      % Large (but smaller than section), not bold
+%   {\thesubsection}              % Subsection number
+%   {0.5em}                       % Space between number and title
+%   {}                            % Code before title body
+
+% Optional: Adjust spacing before and after sections
+% \titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+% \titlespacing*{\subsection}{0pt}{2.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\begin{document}
+
+% Title
+\title{Laboratory 1 Report}
+
+% Define authors and their affiliations
+
+\author{Andrea Botticella}
+\authornote{The authors collaborated closely in developing this project.}
+\email{andrea.botticella@studenti.polito.it}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+\author{Elia Innocenti}
+\authornotemark[1]
+\email{elia.innocenti@studenti.polito.it}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+\author{Simone Romano}
+\authornotemark[1]
+\email{simone.romano2@studenti.polito.it}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+% Short author list for page headers
+\renewcommand{\shortauthors}{Botticella, Innocenti, and Romano}
+
+% CCS Concepts
+% FIXME: update and check FOR EACH REPORT
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10010147.10010257.10010321.10010337</concept_id>
+       <concept_desc>Computing methodologies~Supervised learning by classification</concept_desc>
+       <concept_significance>500</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10010147.10010257.10010321.10010335</concept_id>
+       <concept_desc>Computing methodologies~Unsupervised learning</concept_desc>
+       <concept_significance>500</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10010147.10010257.10010339</concept_id>
+       <concept_desc>Computing methodologies~Natural language processing</concept_desc>
+       <concept_significance>400</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10010147.10010257.10010236</concept_id>
+       <concept_desc>Computing methodologies~Machine learning</concept_desc>
+       <concept_significance>400</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10010147.10010528.10010531</concept_id>
+       <concept_desc>Computing methodologies~Machine learning approaches</concept_desc>
+       <concept_significance>300</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10002978.10003006.10011634</concept_id>
+       <concept_desc>Security and privacy~Intrusion detection systems</concept_desc>
+       <concept_significance>200</concept_significance>
+   </concept>
+</ccs2012>
+\end{CCSXML}
+
+% FIXME: update and check FOR EACH REPORT
+\ccsdesc[500]{Computing methodologies~Supervised learning by classification}
+\ccsdesc[500]{Computing methodologies~Unsupervised learning}
+\ccsdesc[400]{Computing methodologies~Natural language processing}
+\ccsdesc[400]{Computing methodologies~Machine learning}
+\ccsdesc[300]{Computing methodologies~Machine learning approaches}
+\ccsdesc[200]{Security and privacy~Intrusion detection systems}
+
+% Keywords
+% FIXME: update and check FOR EACH REPORT
+\keywords{Machine learning, supervised learning, unsupervised learning, language models, text classification, clustering, intent classification, SSH shell attacks, security log analysis}
+
+\input{sections/abstract}
+
+\maketitle
+
+% Table of Contents
+% TODO: check
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+% Include the sections you have in your sections directory
+\input{sections/introduction}
+\input{sections/conclusion}
+
+% Include the appendix
+\clearpage
+\appendix
+\input{appendix/appendix}
+
+% Include the bibliography file
+% TODO: check
+\nocite{*} % Include all references from the .bib file
+\bibliographystyle{template/ACM-Reference-Format}
+\bibliography{bibliography/references}
+
+\end{document}
