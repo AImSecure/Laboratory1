@@ -1,0 +1,41 @@
+% task1.tex
+
+% Section Title
+\section{DATA ANALYSIS AND PREPROCESSING} \label{sec:data-analysis-preprocessing}
+
+    \subsection{Dataset and labels}
+    
+        We work with a tabular subset of CICIDS2017 comprising flow-level statistics (e.g., Flow Duration, Flow IAT Mean, Bwd/Fwd packet-length summaries, Flow Bytes/s, flags-related counts) and a categorical label in \{\emph{Benign}, \emph{DoS Hulk}, \emph{PortScan}, \emph{Brute Force}\}. 
+        Each row is a flow; no raw packet sequences are used. The goal is multi-class classification on these features.
+
+        The selected features include (non-exhaustively): \textit{Flow Duration}, \textit{Flow IAT Mean}, \textit{Fwd PSH Flags}, \textit{Bwd Packet Length Mean/Max}, \textit{Flow Bytes/s}, \textit{Down/Up Ratio}, \textit{SYN Flag Count}, \textit{Fwd Packet Length Mean/Max}, \textit{Fwd IAT Std}, \textit{Packet Length Mean}, \textit{Subflow Fwd Packets}, \textit{Flow Packets/s}, \textit{Total Fwd Packets}, and \textit{Destination Port}. 
+        The label is a four-class categorical variable.
+
+    \subsection{Cleaning protocol and effects}
+
+        The preprocessing adheres to a conservative protocol: non-finite values are replaced and dropped, missing values are removed, and duplicates are eliminated. Concretely, starting from a raw table of \textasciitilde\,31\,507 rows, we remove missing, duplicate, and infinite entries and obtain \textasciitilde\,29\,386 clean samples (as printed in the notebook). 
+        In total, the cleaning step removes \textasciitilde\,2,121 rows (\textasciitilde\,2,114 NaN/duplicates + \textasciitilde\,7 infinite). 
+        This step is essential to prevent degenerate gradients, spurious leakage through repeated rows, and unstable scalers.
+
+        The label column is encoded with a \texttt{LabelEncoder}; the mapping is kept for interpretability when printing classification reports.
+
+    \subsection{Stratified data split}
+
+        We split the data into training, validation, and test partitions with a 60/20/20 ratio using stratification by label to preserve class proportions. 
+        Random seeds are fixed for reproducibility. 
+        All transformers (e.g., scalers) are \emph{fit} on the training split only and \emph{applied} to validation and test to avoid leakage. 
+        The notebook reports initial split sizes around 17.6k/5.9k/5.9k for train/val/test, with the majority class dominating.
+
+    \subsection{Outliers and normalization}
+
+        We inspect distributions on the training split using Z-score and IQR-based analyses and visualize representative features via KDE and boxplots. 
+        Several features exhibit heavy tails and extreme values (e.g., \textit{Bwd Packet Length Max}, \textit{Flow Duration}, \textit{Bwd Packet Length Mean}, \textit{Fwd IAT Std}). 
+        We therefore compare two scalers on the training split: StandardScaler (zero mean, unit variance) and RobustScaler (median and IQR). 
+        While RobustScaler is less sensitive to outliers and produced tighter distributions for heavy-tailed features, we ultimately adopt \emph{standardization} because it yielded smoother learning curves and indistinguishable or slightly better downstream accuracy in preliminary runs, while keeping interpretation and hyperparameter tuning simple.
+
+        All scaling hyperparameters are estimated on training data and then applied unchanged to validation and test sets.
+
+    \subsection{Evaluation metrics and selection protocol}
+
+        Given class imbalance, we monitor overall accuracy together with per-class precision, recall, and F1-scores, and we report macro- and weighted-F1 aggregates. 
+        Models are selected by the epoch that minimizes validation loss (early stopping with small \texttt{min\_delta} and \texttt{patience}); the best weights are restored before final evaluation on the test set.

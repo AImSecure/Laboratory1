@@ -1,0 +1,33 @@
+% task2.tex
+
+% Section Title
+\section{SHALLOW NEURAL NETWORK (1 LAYER)} \label{sec:shallow-nn}
+
+    \subsection{Architectures and training setup}
+
+        We train three single-hidden-layer FFNNs that differ only by hidden width:
+        $\{32, 64, 128\}$ neurons. Inputs are standardized features; outputs are logits over the four classes. 
+        The loss is cross-entropy, the optimizer is AdamW with learning rate $5\times 10^{-4}$, the batch size is 64, and early stopping monitors validation loss. 
+        We first use a linear activation in the hidden layer to establish a conservative baseline, then replace it with ReLU on the best width selected by validation.
+
+        Implementation details follow the notebook: the training loop averages batch losses per epoch for both training and validation partitions; early stopping stores the best-performing state dict whenever the validation loss improves by more than \texttt{min\_delta} and aborts when no such improvement occurs for \texttt{patience} epochs. 
+        We used \texttt{min\_delta} $=10^{-5}$ and \texttt{patience} $=20$ across widths.
+
+    \subsection{Convergence and model selection}
+
+        All three models exhibit smooth training and validation loss decay and reach a stable plateau within the epoch budget. 
+        We select the model snapshot that achieves the minimum validation loss, restoring those weights before evaluation. 
+        Using this criterion favors architectures that generalize better rather than those that merely minimize training loss.
+
+    \subsection{Validation performance and class-wise behavior}
+
+        On the validation split, larger widths generally yield stronger macro-level metrics, although differences are modest. 
+        Without nonlinearity (linear activation), minority-class recognition is fragile: the most challenging class often shows very low recall. 
+        In our runs, 128 neurons achieved the highest macro F1 (\textasciitilde\,0.76) and accuracy (\textasciitilde\,0.897) on validation, while the 64-neuron model achieved the lowest validation loss over epochs and exhibited the most stable convergence. 
+        Switching the best-width network to ReLU substantially improved the \emph{Brute Force} class, reaching an F1 around 0.85 on validation, while preserving strong performance on majority classes. 
+        This indicates that even shallow nonlinear capacity is beneficial for this tabular task.
+
+    \subsection{Test-set generalization}
+
+        Comparing validation and test reports for the selected model (64 neurons with ReLU) shows closely aligned metrics, supporting the conclusion that the training protocol and early stopping prevented overfitting and that the model generalizes well. 
+        In the remainder of the study we therefore use the best shallow configuration with ReLU as a competitive baseline when comparing deeper models and data/feature manipulations.

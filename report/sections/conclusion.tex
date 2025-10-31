@@ -3,4 +3,22 @@
 % Section Title
 \section{CONCLUSIONS} \label{sec:conclusions}
 
-    % text
+    This report walked through a complete FFNN pipeline and used empirical evidence from the notebook to draw conclusions regarding architecture choices, preprocessing, and regularization.
+
+    Key takeaways:
+    \begin{itemize}
+        \item \textbf{Preprocessing matters:} scaling, padding/truncation, and handling duplicates/NaNs materially affect training dynamics and the effective class balance.
+        \item \textbf{Feature biases can be dangerous:} a single feature (Destination Port) can introduce a brittle shortcut for a classifier. Removing the feature reduced this bias but also altered class supports via duplicate collapse, illustrating the complexity of data curation.
+        \item \textbf{Regularization should be measured, not maximal:} for these standardized tabular features, \emph{light weight decay} with AdamW yielded the best trade-off. Aggressive dropout or batch normalization did not consistently help and sometimes degraded minority-class metrics.
+        \item \textbf{Class imbalance requires active handling:} using class-weighted loss helped recover recall on rare classes; nevertheless, extremely small supports (e.g., 57 samples) lead to unreliable per-class estimates and require either resampling/augmentation or different evaluation strategies.
+        \item \textbf{Operational implication for cybersecurity:} models that rely on spurious correlations are fragile in deployment. Robust detection requires attention to dataset provenance, feature engineering, and evaluation protocols that prioritize macro metrics.
+    \end{itemize}
+
+    \subsection{Future work}
+
+        Possible extensions:
+        \begin{itemize}
+            \item Explore sequential or attention-based models when raw sequences become available, to complement tabular features.
+            \item Explore data augmentation or generative techniques to increase minority-class support.
+            \item Perform stratified cross-validation and confidence estimation for rare-class performance.
+        \end{itemize}

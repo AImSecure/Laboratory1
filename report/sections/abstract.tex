@@ -2,6 +2,17 @@
 
 \begin{abstract}
 
-    This is the abstract of the report.
-    
+    This report presents a systematic study of Feed-Forward Neural Networks (FFNNs) for multi-class network-flow classification using a curated subset of CICIDS2017. 
+    We build an end-to-end pipeline in PyTorch that encompasses data cleaning, stratified splitting, outlier inspection, and feature normalization; we then investigate how architectural depth, activation functions, batch size, optimizers, loss re-weighting, and regularization affect learning dynamics and generalization.
+
+    The work is organized in six tasks. First, we establish a robust preprocessing protocol and compare Standard vs. Robust scaling, ultimately adopting standardization fitted on the training split. 
+    Second, we train shallow one-hidden-layer models with different widths and show that switching from a linear activation to ReLU substantially improves minority-class recognition while preserving overall accuracy and stable convergence. 
+    Third, we expose a harmful inductive bias: the feature \emph{Destination Port} is spuriously correlated with the \emph{Brute Force} class. 
+    A simple port substitution at inference time causes a marked performance drop, and removing the feature reshapes class supports due to duplicate collapse. 
+    Fourth, we mitigate class imbalance with a class-weighted cross-entropy that improves macro-level metrics and recall for rare classes without materially harming overall accuracy. 
+    Fifth, we extend to deeper FFNNs and analyze the effect of batch size and optimizers, observing that smaller batches tend to generalize better at higher computational cost and that AdamW provides the most reliable optimization among tested choices. 
+    Finally, we assess overfitting and regularization and find that a small weight decay (AdamW) yields the best trade-off on this tabular task, whereas aggressive dropout or batch normalization can underfit or destabilize validation loss.
+
+    Overall, our results underline three practical lessons for intrusion-detection FFNNs on tabular features: (i) treat feature-induced biases explicitly; (ii) prefer training-set-fitted standardization and class-weighted losses when imbalance matters; and (iii) adopt modest capacity with careful regularization (light weight decay), ReLU activations, and a robust optimizer such as AdamW.
+
 \end{abstract}

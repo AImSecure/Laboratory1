@@ -1,0 +1,41 @@
+% task5.tex
+
+% Section Title
+\section{DEEP NEURAL NETWORK} \label{sec:deep-nn}
+
+    \subsection{Design of deep architectures}
+
+        We extend the shallow baseline to 3--5 hidden layers with modest widths (2--32 neurons per layer). 
+        The aim is to quantify whether added depth improves representation on tabular features and how it interacts with other training choices. 
+        We instantiate six architectures (two per depth), for example: L3: [16, 8, 4] and [32, 16, 8]; L4: [32, 16, 8, 4] and [16, 16, 8, 8]; L5: [32, 32, 16, 8, 4] and [16, 8, 8, 4, 2]. 
+        The most reliable configuration in our experiments is a 3-layer network with widths \texttt{[32, 16, 8]} (tag \texttt{deep\_L3\_widths\_32\_16\_8}), trained with ReLU and AdamW.
+
+    \subsection{Loss curves and convergence (qualitative summary)}
+
+        Deeper models converge smoothly with early stopping. 
+        Three-layer networks consistently achieve lower validation losses than the single-layer baseline, while 4--5 layers offer no systematic improvement for this feature set and can overfit unless regularized. 
+        Saved loss curves (not reproduced here) document these trends.
+
+    \subsection{Batch size experiments}
+    
+        Using the best architecture, we vary batch size in \{4, 64, 256, 1024\}. 
+        Smaller batches produce noisier but more generalizable updates and achieve the best validation macro metrics, at the cost of markedly longer training times. 
+        Conversely, very large batches train quickly but underperform on validation. 
+        We retain batch size 64 as a good compromise between stability, runtime, and generalization, also because it produced smoother loss curves during early stopping.
+
+    \subsection{Optimizer comparison}
+
+        We compare SGD, SGD with momentum (0.1/0.5/0.9), and AdamW under matched learning rates and early stopping. 
+        AdamW converges fastest and reaches lower validation loss. 
+        Momentum helps SGD, narrowing the gap, but AdamW remains the most reliable choice without additional tuning effort.
+
+    \subsection{Per-class test reports and a troubling observation}
+    
+        On the no-port splits, some trained models failed to predict the rarest class at all in certain runs, despite high overall accuracy. 
+        This behavior stems from extremely low support for that class in validation/test after duplicate removal and from residual imbalance. 
+        It underscores the importance of macro-level metrics and, when feasible, resampling or augmentation for robust estimates. 
+        For the selected deep model (\texttt{deep\_L3\_widths\_32\_16\_8}), the reported test metrics include accuracy \textasciitilde\,0.9530, weighted F1 \textasciitilde\,0.9523, and macro F1 \textasciitilde\,0.8282, with a lower F1 (\textasciitilde\,0.50) for \emph{PortScan} compared to other classes.
+
+    \subsection{Implication}
+    Dataset transformations can mitigate shortcut learning yet inadvertently reduce minority supports. 
+    For credible evaluation, pair feature curation with class-aware losses and sampling strategies; otherwise, improvements in overall accuracy may hide systematic failures on rare but security-critical classes.

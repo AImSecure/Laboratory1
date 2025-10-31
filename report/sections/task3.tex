@@ -1,0 +1,33 @@
+% task3.tex
+
+% Section Title
+\section{THE IMPACT OF SPECIFIC FEATURES (DESTINATION PORT)} \label{sec:impact-dest-port}
+
+    \subsection{Why this feature matters}
+
+        In the provided dataset, \emph{Destination Port} is strongly correlated with certain labels. 
+        In particular, all flows labeled as \emph{Brute Force} originate from port 80. 
+        If a model exploits this shortcut, it will appear accurate under the original distribution but fail under even small deviations at inference time. 
+        We therefore design two experiments to diagnose and mitigate this bias.
+
+    \subsection{Perturbation at inference time}
+
+        We modify the \emph{test} split only by replacing \texttt{Destination Port} = 80 with 8080 for rows labeled \emph{Brute Force}, leaving all other samples unchanged. 
+        Evaluating the best shallow model on this perturbed test set reveals a pronounced drop in precision (\textasciitilde\,0.17), recall (\textasciitilde\,0.05), and F1 (\textasciitilde\,0.08) for \emph{Brute Force}, with overall accuracy falling from \textasciitilde\,95\% to \textasciitilde\,90.4\%. 
+        This confirms that the original model captured a spurious correlation rather than a causal signal.
+
+    \subsection{Removing the feature and reprocessing}
+
+        To remove the shortcut entirely, we drop the \texttt{Destination Port} column from the original table and repeat the full preprocessing (cleaning, stratified splitting, scaling fitted on training). 
+        An immediate side effect is a sharp change in class supports: without the port column, many rows that previously differed only by destination port become exact duplicates and are eliminated by the cleaning step. 
+        The net effect is that some attack classes --- most notably \emph{PortScan} --- lose a large fraction of instances. 
+        For example, \emph{PortScan} counts drop from \textasciitilde\,5,000 in the raw dataset to \textasciitilde\,285 after duplicate removal on the no-port table; \emph{Brute Force} support in validation/test also becomes very small (\textasciitilde\,57 samples per split in our runs).
+
+        This phenomenon illustrates that ``debiasing by feature removal'' can reshape the dataset in subtle ways. 
+        It is still the right choice to prevent shortcut learning here, but it must be accompanied by evaluation strategies that remain meaningful when some classes become rare.
+
+    \subsection{Implications}
+
+        After removing the feature, training on the new splits yields models that no longer rely on ports, but class imbalance is now more severe. 
+        Consequently, downstream experiments (next sections) complement this change with class-weighted losses and careful reporting of macro metrics to avoid over-optimistic conclusions. 
+        Where class supports become extremely small, we emphasize macro-F1 and per-class recall, and we discuss the limitations of single-split estimates.
