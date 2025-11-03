@@ -1,41 +1,167 @@
 % task1.tex
 
 % Section Title
-\section{DATA ANALYSIS AND PREPROCESSING} \label{sec:data-analysis-preprocessing}
+% \section{DATA ANALYSIS AND PREPROCESSING} \label{sec:data-analysis-preprocessing}
+\section{TASK 1 --- DATA PREPROCESSING} \label{sec:data-preprocessing}
 
-    \subsection{Dataset and labels}
+    % \subsection{Dataset and labels}
+    % 
+    %     We work with a tabular subset of CICIDS2017 comprising flow-level statistics (e.g., Flow Duration, Flow IAT Mean, Bwd/Fwd packet-length summaries, Flow Bytes/s, flags-related counts) and a categorical label in \{\emph{Benign}, \emph{DoS Hulk}, \emph{PortScan}, \emph{Brute Force}\}. 
+    %     Each row is a flow; no raw packet sequences are used. The goal is multi-class classification on these features.
+    % 
+    %     The selected features include (non-exhaustively): \textit{Flow Duration}, \textit{Flow IAT Mean}, \textit{Fwd PSH Flags}, \textit{Bwd Packet Length Mean/Max}, \textit{Flow Bytes/s}, \textit{Down/Up Ratio}, \textit{SYN Flag Count}, \textit{Fwd Packet Length Mean/Max}, \textit{Fwd IAT Std}, \textit{Packet Length Mean}, \textit{Subflow Fwd Packets}, \textit{Flow Packets/s}, \textit{Total Fwd Packets}, and \textit{Destination Port}. 
+    %     The label is a four-class categorical variable.
+    % 
+    % \subsection{Cleaning protocol and effects}
+    % 
+    %     The preprocessing adheres to a conservative protocol: non-finite values are replaced and dropped, missing values are removed, and duplicates are eliminated. Concretely, starting from a raw table of \textasciitilde\,31\,507 rows, we remove missing, duplicate, and infinite entries and obtain \textasciitilde\,29\,386 clean samples (as printed in the notebook). 
+    %     In total, the cleaning step removes \textasciitilde\,2,121 rows (\textasciitilde\,2,114 NaN/duplicates + \textasciitilde\,7 infinite). 
+    %     This step is essential to prevent degenerate gradients, spurious leakage through repeated rows, and unstable scalers.
+    % 
+    %     The label column is encoded with a \texttt{LabelEncoder}; the mapping is kept for interpretability when printing classification reports.
+    % 
+    % \subsection{Stratified data split}
+    % 
+    %     We split the data into training, validation, and test partitions with a 60/20/20 ratio using stratification by label to preserve class proportions. 
+    %     Random seeds are fixed for reproducibility. 
+    %     All transformers (e.g., scalers) are \emph{fit} on the training split only and \emph{applied} to validation and test to avoid leakage. 
+    %     The notebook reports initial split sizes around 17.6k/5.9k/5.9k for train/val/test, with the majority class dominating.
+    % 
+    % \subsection{Outliers and normalization}
+    % 
+    %     We inspect distributions on the training split using Z-score and IQR-based analyses and visualize representative features via KDE and boxplots. 
+    %     Several features exhibit heavy tails and extreme values (e.g., \textit{Bwd Packet Length Max}, \textit{Flow Duration}, \textit{Bwd Packet Length Mean}, \textit{Fwd IAT Std}). 
+    %     We therefore compare two scalers on the training split: StandardScaler (zero mean, unit variance) and RobustScaler (median and IQR). 
+    %     While RobustScaler is less sensitive to outliers and produced tighter distributions for heavy-tailed features, we ultimately adopt \emph{standardization} because it yielded smoother learning curves and indistinguishable or slightly better downstream accuracy in preliminary runs, while keeping interpretation and hyperparameter tuning simple.
+    % 
+    %     All scaling hyperparameters are estimated on training data and then applied unchanged to validation and test sets.
+    % 
+    % \subsection{Evaluation metrics and selection protocol}
+    % 
+    %     Given class imbalance, we monitor overall accuracy together with per-class precision, recall, and F1-scores, and we report macro- and weighted-F1 aggregates. 
+    %     Models are selected by the epoch that minimizes validation loss (early stopping with small \texttt{min\_delta} and \texttt{patience}); the best weights are restored before final evaluation on the test set.
+
+    \subsection{Objective}
+
+        Before training, the dataset was cleaned and normalized to ensure the model learns meaningful statistical relationships rather than artifacts of noise or imbalance.  
+        The preprocessing pipeline targeted three main goals: data quality, class balance, and feature scaling.
+
+        Before any training, the dataset must be cleaned and normalized to ensure the model learns meaningful statistical relationships rather than artifacts of data noise or imbalance.
+        The preprocessing pipeline targets three main issues:
+
+        \begin{enumerate}
+            \item \textbf{Data quality}: removing missing, duplicate, and infinite values.
+            \item \textbf{Class imbalance}: preserving proportional representation during splitting.
+            \item \textbf{Feature scaling}: standardizing feature ranges to stabilize neural training.
+        \end{enumerate}
+
+    \subsection{Dataset Overview}
+
+        The raw dataset (\texttt{dataset\_lab\_1.csv}) contained \textbf{31,507 samples} and \textbf{17 features}, including numerical flow statistics and a categorical label identifying traffic types: \textit{Benign}, \textit{DoS Hulk}, \textit{PortScan}, and \textit{Brute Force}.
+        The initial label distribution was strongly skewed, dominated by benign flows ($\approx$ 20,000 samples).
+
+        A class distribution plot (Figure \ref{fig:class_distribution}) visually confirmed this imbalance, motivating the use of \textbf{stratified splitting} later in the pipeline.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.6\textwidth]{\imagespath class_distribution.png}
+            \caption{Class distribution in the raw dataset, showing significant imbalance.}
+            \label{fig:class_distribution}
+        \end{figure}
+
+    % \subsection{Methodology and Results}
+    % 
+    %     The original dataset contained 31,507 samples and 17 features.  
+    %     After removing NaN values, duplicates, and infinite entries, a clean set of 29,386 samples remained.  
+    %     Labels were encoded into four classes: \textit{Benign}, \textit{Brute Force}, \textit{DoS Hulk}, and \textit{PortScan}.  
+    %     Stratified splitting (60/20/20) preserved label ratios.
+    % 
+    %     Outlier analysis (via Z-score and IQR) revealed high variability in several features, motivating a comparison between \texttt{StandardScaler} and \texttt{RobustScaler}.  
+    %     Despite RobustScaler's slight advantage on skewed distributions, StandardScaler was selected for its smooth convergence and interpretability.
+    % 
+    % \subsection{Outcome}
+    % 
+    %     The resulting standardized dataset—29,386 clean samples—provided a stable foundation for subsequent FFNN training.
+
+    \subsection{Data Cleaning}
+
+        Sequential filtering removed invalid data:
+
+        \begin{table}
+            \centering
+            \begin{tabular}{l l l}
+                \toprule
+                \textbf{Step} & \textbf{Samples Removed} & \textbf{Remaining Samples} \\
+                \midrule
+                Raw dataset          & --    & 31,507 \\
+                Drop NaN             & 20    & 31,487 \\
+                Drop duplicates      & 2,114 & 29,393 \\
+                Drop infinite values & 7     & \textbf{29,386} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Data cleaning steps and resulting sample counts.}
+            \label{tab:cleaning_steps}
+        \end{table}
+
+        Thus, about \textbf{2,121} rows (6.7\%) were discarded, yielding a consistent dataset of \textbf{29,386 clean samples}.
+        All features were verified to contain finite numeric values, and labels were \textbf{encoded} as integers (\textit{Benign = 0, Brute Force = 1, DoS Hulk = 2, PortScan = 3}).
+
+    \subsection{Data Splitting}
+
+        To preserve the original label proportions, the dataset was divided \textbf{stratified} into:
+
+        \begin{itemize}
+            \item \textbf{Training set}: 17,631 samples (60\%)
+            \item \textbf{Validation set}: 5,877 samples (20\%)
+            \item \textbf{Test set}: 5,878 samples (20\%)
+        \end{itemize}
+
+        The resulting partitions maintained consistent class ratios, ensuring fair evaluation of minority attacks.
     
-        We work with a tabular subset of CICIDS2017 comprising flow-level statistics (e.g., Flow Duration, Flow IAT Mean, Bwd/Fwd packet-length summaries, Flow Bytes/s, flags-related counts) and a categorical label in \{\emph{Benign}, \emph{DoS Hulk}, \emph{PortScan}, \emph{Brute Force}\}. 
-        Each row is a flow; no raw packet sequences are used. The goal is multi-class classification on these features.
+    \subsection{Outlier Analysis}
 
-        The selected features include (non-exhaustively): \textit{Flow Duration}, \textit{Flow IAT Mean}, \textit{Fwd PSH Flags}, \textit{Bwd Packet Length Mean/Max}, \textit{Flow Bytes/s}, \textit{Down/Up Ratio}, \textit{SYN Flag Count}, \textit{Fwd Packet Length Mean/Max}, \textit{Fwd IAT Std}, \textit{Packet Length Mean}, \textit{Subflow Fwd Packets}, \textit{Flow Packets/s}, \textit{Total Fwd Packets}, and \textit{Destination Port}. 
-        The label is a four-class categorical variable.
+        Outliers were examined using \textbf{Z-score} (\(> 3\,\sigma\)) and \textbf{IQR} (\(1.5\times\mathrm{IQR}\)) methods.
+        The analysis showed that several numerical attributes contained substantial extreme values:
 
-    \subsection{Cleaning protocol and effects}
+        \begin{itemize}
+            \item \textbf{Most affected (IQR)}: \textit{Bwd Packet Length Max}, \textit{Destination Port}, \textit{Flow Duration}, \textit{Bwd Packet Length Mean}, and \textit{Fwd IAT Std}, each with thousands of detected outliers.
+            \item \textbf{Least affected:} \textit{Down/Up Ratio} and \textit{Flow Bytes/s}.
+        \end{itemize}
 
-        The preprocessing adheres to a conservative protocol: non-finite values are replaced and dropped, missing values are removed, and duplicates are eliminated. Concretely, starting from a raw table of \textasciitilde\,31\,507 rows, we remove missing, duplicate, and infinite entries and obtain \textasciitilde\,29\,386 clean samples (as printed in the notebook). 
-        In total, the cleaning step removes \textasciitilde\,2,121 rows (\textasciitilde\,2,114 NaN/duplicates + \textasciitilde\,7 infinite). 
-        This step is essential to prevent degenerate gradients, spurious leakage through repeated rows, and unstable scalers.
+        KDE and boxplots (Figure 2) visually confirmed long-tailed distributions with significant right-skewness, typical of network traffic statistics.
 
-        The label column is encoded with a \texttt{LabelEncoder}; the mapping is kept for interpretability when printing classification reports.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.7\textwidth]{\imagespath raw_distributions_1.png}
+            
+            \vspace{0.5cm}
+            
+            \includegraphics[width=0.7\textwidth]{\imagespath raw_distributions_2.png}
+            \caption{Distribution analysis of selected features showing long-tailed distributions and extreme values. Top: KDE plots showing feature distributions. Bottom: Boxplots revealing outliers.}
+            \label{fig:outlier_analysis}
+        \end{figure}
 
-    \subsection{Stratified data split}
+        These findings indicated that a scaler robust to outliers might improve feature normalization.
 
-        We split the data into training, validation, and test partitions with a 60/20/20 ratio using stratification by label to preserve class proportions. 
-        Random seeds are fixed for reproducibility. 
-        All transformers (e.g., scalers) are \emph{fit} on the training split only and \emph{applied} to validation and test to avoid leakage. 
-        The notebook reports initial split sizes around 17.6k/5.9k/5.9k for train/val/test, with the majority class dominating.
+    \subsection{Feature Normalization}
 
-    \subsection{Outliers and normalization}
+        Two scalers were compared:
 
-        We inspect distributions on the training split using Z-score and IQR-based analyses and visualize representative features via KDE and boxplots. 
-        Several features exhibit heavy tails and extreme values (e.g., \textit{Bwd Packet Length Max}, \textit{Flow Duration}, \textit{Bwd Packet Length Mean}, \textit{Fwd IAT Std}). 
-        We therefore compare two scalers on the training split: StandardScaler (zero mean, unit variance) and RobustScaler (median and IQR). 
-        While RobustScaler is less sensitive to outliers and produced tighter distributions for heavy-tailed features, we ultimately adopt \emph{standardization} because it yielded smoother learning curves and indistinguishable or slightly better downstream accuracy in preliminary runs, while keeping interpretation and hyperparameter tuning simple.
+        \begin{enumerate}
+            \item \textbf{StandardScaler}: centers each feature and scales to unit variance.
+            \item \textbf{RobustScaler}: uses median and inter-quartile range, reducing sensitivity to outliers.
+        \end{enumerate}
 
-        All scaling hyperparameters are estimated on training data and then applied unchanged to validation and test sets.
+        The \textbf{density comparison plots} (Figure 3) showed that both methods effectively normalized distributions, but \textit{RobustScaler} produced more compact, less skewed curves for highly variable features.
+        However, the numerical statistics and subsequent training experiments revealed negligible performance difference between the two.
+        Therefore, \textbf{StandardScaler} was ultimately adopted for simplicity and interpretability, offering smoother loss curves in preliminary trials.
 
-    \subsection{Evaluation metrics and selection protocol}
+        % TODO: Add Figure 3 with density comparison if needed.
 
-        Given class imbalance, we monitor overall accuracy together with per-class precision, recall, and F1-scores, and we report macro- and weighted-F1 aggregates. 
-        Models are selected by the epoch that minimizes validation loss (early stopping with small \texttt{min\_delta} and \texttt{patience}); the best weights are restored before final evaluation on the test set.
+    \subsubsection{Outcome Discussion}
+
+        The preprocessing phase successfully established a \textbf{clean, standardized dataset} suitable for neural training.
+        The cleaning reduced noise and duplicates, while stratified splitting and normalization ensured data integrity and comparability across partitions.
+        Outlier analysis provided critical justification for scaling choice, balancing robustness and model stability.
+
+        The resulting dataset of \textbf{29,386 samples} (\(4\,\text{classes} \times 16\,\text{features} + \text{label}\)) became the foundation for subsequent FFNN experiments.

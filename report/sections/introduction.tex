@@ -3,16 +3,31 @@
 % Section Title
 \section{INTRODUCTION} \label{sec:introduction}
 
-    This laboratory investigates Feed-Forward Neural Networks (FFNNs) for intrusion detection on tabular, flow-level features derived from CICIDS2017. 
-    Our objective is twofold: first, to engineer a transparent and reproducible supervised-learning pipeline in PyTorch, and second, to quantify how modeling choices influence both optimization behavior and generalization in presence of class imbalance and feature-induced biases.
+    % This laboratory investigates Feed-Forward Neural Networks (FFNNs) for intrusion detection on tabular, flow-level features derived from CICIDS2017. 
+    % Our objective is twofold: first, to engineer a transparent and reproducible supervised-learning pipeline in PyTorch, and second, to quantify how modeling choices influence both optimization behavior and generalization in presence of class imbalance and feature-induced biases.
+    % 
+    % We proceed in six steps. We start by establishing a robust preprocessing protocol that removes missing values and duplicates, handles non-finite entries, and applies standardization fitted on the training split; we also inspect distributions and outliers to justify the scaling choice. 
+    % We then study shallow architectures (one hidden layer) and show how activation functions (linear vs. ReLU) alter minority-class recognition without compromising stability. 
+    % Next, we expose a spurious correlation between the feature \emph{Destination Port} and the \emph{Brute Force} label, demonstrating that a small perturbation at inference time (changing port 80 to 8080) degrades performance markedly; removing the feature further reveals how duplicate collapse reshapes class supports.
+    % 
+    % Building on these insights, we adopt class-weighted cross-entropy to improve macro-level metrics and minority recall, extend the architecture to deeper FFNNs to explore capacity, and analyze the impact of batch size and optimizer. 
+    % Finally, we quantify overfitting and evaluate regularization strategies. 
+    % Across the study, AdamW emerges as the most reliable optimizer, smaller batches tend to generalize better at higher computation cost, and light weight decay provides the best regularization balance for this tabular task.
+    % 
+    % Beyond raw metrics, the broader lesson for AI and Cybersecurity is methodological: reliable evaluation requires attention to data provenance, feature biases, and class supports; principled preprocessing and targeted regularization often matter as much as architectural complexity. 
+    % Throughout the report we report not only accuracy but also per-class precision/recall and macro/weighted F1-scores to capture minority-class behavior, and we use early stopping with validation-based model selection to prevent overfitting.
 
-    We proceed in six steps. We start by establishing a robust preprocessing protocol that removes missing values and duplicates, handles non-finite entries, and applies standardization fitted on the training split; we also inspect distributions and outliers to justify the scaling choice. 
-    We then study shallow architectures (one hidden layer) and show how activation functions (linear vs. ReLU) alter minority-class recognition without compromising stability. 
-    Next, we expose a spurious correlation between the feature \emph{Destination Port} and the \emph{Brute Force} label, demonstrating that a small perturbation at inference time (changing port 80 to 8080) degrades performance markedly; removing the feature further reveals how duplicate collapse reshapes class supports.
+    This laboratory explores the implementation of a \textbf{Feed-Forward Neural Network (FFNN)} using the \textbf{CICIDS2017} dataset, a standard benchmark for intrusion detection research.  
+    The goal is to construct a complete machine learning pipeline in \texttt{PyTorch}—from raw data preparation to model evaluation—to analyze how architectural choices and preprocessing strategies affect classification performance in cybersecurity contexts.
 
-    Building on these insights, we adopt class-weighted cross-entropy to improve macro-level metrics and minority recall, extend the architecture to deeper FFNNs to explore capacity, and analyze the impact of batch size and optimizer. 
-    Finally, we quantify overfitting and evaluate regularization strategies. 
-    Across the study, AdamW emerges as the most reliable optimizer, smaller batches tend to generalize better at higher computation cost, and light weight decay provides the best regularization balance for this tabular task.
+    \noindent The experiment is divided into six tasks, progressively building complexity:
+    \begin{enumerate}
+        \item \textbf{Data preprocessing}: cleaning, scaling, and outlier management
+        \item \textbf{Baseline FFNN training}: single hidden layer
+        \item \textbf{Feature bias analysis}: focus on \texttt{Destination Port}
+        \item \textbf{Loss-function weighting}: for class imbalance
+        \item \textbf{Deep network optimization}: architecture and optimizer variations
+        \item \textbf{Regularization}: dropout, batch normalization, weight decay
+    \end{enumerate}
 
-    Beyond raw metrics, the broader lesson for AI and Cybersecurity is methodological: reliable evaluation requires attention to data provenance, feature biases, and class supports; principled preprocessing and targeted regularization often matter as much as architectural complexity. 
-    Throughout the report we report not only accuracy but also per-class precision/recall and macro/weighted F1-scores to capture minority-class behavior, and we use early stopping with validation-based model selection to prevent overfitting.
+    The overarching aim is to understand how data characteristics and network configuration influence the model's ability to detect attack types such as \textit{DoS Hulk}, \textit{PortScan}, and \textit{Brute Force}, while maintaining robustness and generalization.

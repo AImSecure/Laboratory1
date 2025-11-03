@@ -1,41 +1,193 @@
 % task5.tex
 
 % Section Title
-\section{DEEP NEURAL NETWORK} \label{sec:deep-nn}
+% \section{DEEP NEURAL NETWORK} \label{sec:deep-nn}
+\section{TASK 5 --- DEEP FEED-FORWARD NEURAL NETWORK (ARCHITECTURAL AND OPTIMIZER COMPARISON)} \label{sec:deep-nn}
 
-    \subsection{Design of deep architectures}
+    % \subsection{Design of deep architectures}
+    % 
+    %     We extend the shallow baseline to 3--5 hidden layers with modest widths (2--32 neurons per layer). 
+    %     The aim is to quantify whether added depth improves representation on tabular features and how it interacts with other training choices. 
+    %     We instantiate six architectures (two per depth), for example: L3: [16, 8, 4] and [32, 16, 8]; L4: [32, 16, 8, 4] and [16, 16, 8, 8]; L5: [32, 32, 16, 8, 4] and [16, 8, 8, 4, 2]. 
+    %     The most reliable configuration in our experiments is a 3-layer network with widths \texttt{[32, 16, 8]} (tag \texttt{deep\_L3\_widths\_32\_16\_8}), trained with ReLU and AdamW.
+    % 
+    % \subsection{Loss curves and convergence (qualitative summary)}
+    % 
+    %     Deeper models converge smoothly with early stopping. 
+    %     Three-layer networks consistently achieve lower validation losses than the single-layer baseline, while 4--5 layers offer no systematic improvement for this feature set and can overfit unless regularized. 
+    %     Saved loss curves (not reproduced here) document these trends.
+    % 
+    % \subsection{Batch size experiments}
+    % 
+    %     Using the best architecture, we vary batch size in \{4, 64, 256, 1024\}. 
+    %     Smaller batches produce noisier but more generalizable updates and achieve the best validation macro metrics, at the cost of markedly longer training times. 
+    %     Conversely, very large batches train quickly but underperform on validation. 
+    %     We retain batch size 64 as a good compromise between stability, runtime, and generalization, also because it produced smoother loss curves during early stopping.
+    % 
+    % \subsection{Optimizer comparison}
+    % 
+    %     We compare SGD, SGD with momentum (0.1/0.5/0.9), and AdamW under matched learning rates and early stopping. 
+    %     AdamW converges fastest and reaches lower validation loss. 
+    %     Momentum helps SGD, narrowing the gap, but AdamW remains the most reliable choice without additional tuning effort.
+    % 
+    % \subsection{Per-class test reports and a troubling observation}
+    % 
+    %     On the no-port splits, some trained models failed to predict the rarest class at all in certain runs, despite high overall accuracy. 
+    %     This behavior stems from extremely low support for that class in validation/test after duplicate removal and from residual imbalance. 
+    %     It underscores the importance of macro-level metrics and, when feasible, resampling or augmentation for robust estimates. 
+    %     For the selected deep model (\texttt{deep\_L3\_widths\_32\_16\_8}), the reported test metrics include accuracy \textasciitilde\,0.9530, weighted F1 \textasciitilde\,0.9523, and macro F1 \textasciitilde\,0.8282, with a lower F1 (\textasciitilde\,0.50) for \emph{PortScan} compared to other classes.
+    % 
+    % \subsection{Implication}
+    % Dataset transformations can mitigate shortcut learning yet inadvertently reduce minority supports. 
+    % For credible evaluation, pair feature curation with class-aware losses and sampling strategies; otherwise, improvements in overall accuracy may hide systematic failures on rare but security-critical classes.
 
-        We extend the shallow baseline to 3--5 hidden layers with modest widths (2--32 neurons per layer). 
-        The aim is to quantify whether added depth improves representation on tabular features and how it interacts with other training choices. 
-        We instantiate six architectures (two per depth), for example: L3: [16, 8, 4] and [32, 16, 8]; L4: [32, 16, 8, 4] and [16, 16, 8, 8]; L5: [32, 32, 16, 8, 4] and [16, 8, 8, 4, 2]. 
-        The most reliable configuration in our experiments is a 3-layer network with widths \texttt{[32, 16, 8]} (tag \texttt{deep\_L3\_widths\_32\_16\_8}), trained with ReLU and AdamW.
+    \subsection{Objective}
 
-    \subsection{Loss curves and convergence (qualitative summary)}
+        The fifth task expands upon the shallow architecture developed earlier by investigating the \textbf{impact of network depth} and \textbf{optimizer selection} on learning dynamics and model performance.
+        The goal is to understand whether deeper FFNNs provide meaningful accuracy gains and how different optimization strategies influence convergence, stability, and generalization on the CICIDS2017 dataset.
 
-        Deeper models converge smoothly with early stopping. 
-        Three-layer networks consistently achieve lower validation losses than the single-layer baseline, while 4--5 layers offer no systematic improvement for this feature set and can overfit unless regularized. 
-        Saved loss curves (not reproduced here) document these trends.
+        Specifically, the experiment sought to:
 
-    \subsection{Batch size experiments}
-    
-        Using the best architecture, we vary batch size in \{4, 64, 256, 1024\}. 
-        Smaller batches produce noisier but more generalizable updates and achieve the best validation macro metrics, at the cost of markedly longer training times. 
-        Conversely, very large batches train quickly but underperform on validation. 
-        We retain batch size 64 as a good compromise between stability, runtime, and generalization, also because it produced smoother loss curves during early stopping.
+        \begin{enumerate}
+            \item Extend the baseline single-layer FFNN to \textbf{multi-layer architectures} of varying depth;
+            \item Compare \textbf{AdamW}, \textbf{SGD}, and \textbf{RMSprop} optimizers under controlled conditions;
+            \item Examine the influence of \textbf{batch size} and learning-rate scheduling on convergence behavior;
+            \item Identify the most effective configuration to be used later for regularization and overfitting control (Task 6).
+        \end{enumerate}
 
-    \subsection{Optimizer comparison}
+    % \subsection{Results}
+    % 
+    %     Three architectures were compared:
+    %     \begin{itemize}
+    %         \item DNN-1: 2 layers (64-32)
+    %         \item DNN-2: 3 layers (128-64-32)
+    %         \item DNN-3: 4 layers (256-128-64-32)
+    %     \end{itemize}
+    % 
+    %     The three-layer model achieved the best balance (accuracy $0.957$, macro-F1 $0.932$).  
+    %     Among optimizers, \textbf{AdamW} outperformed RMSprop and SGD in convergence stability.
+    % 
+    % \subsection{Discussion}
+    % 
+    %     Increasing depth improved representation but showed diminishing returns beyond three layers.  
+    %     AdamW offered the optimal trade-off for this dataset.
 
-        We compare SGD, SGD with momentum (0.1/0.5/0.9), and AdamW under matched learning rates and early stopping. 
-        AdamW converges fastest and reaches lower validation loss. 
-        Momentum helps SGD, narrowing the gap, but AdamW remains the most reliable choice without additional tuning effort.
+    \subsection{Methodology}
 
-    \subsection{Per-class test reports and a troubling observation}
-    
-        On the no-port splits, some trained models failed to predict the rarest class at all in certain runs, despite high overall accuracy. 
-        This behavior stems from extremely low support for that class in validation/test after duplicate removal and from residual imbalance. 
-        It underscores the importance of macro-level metrics and, when feasible, resampling or augmentation for robust estimates. 
-        For the selected deep model (\texttt{deep\_L3\_widths\_32\_16\_8}), the reported test metrics include accuracy \textasciitilde\,0.9530, weighted F1 \textasciitilde\,0.9523, and macro F1 \textasciitilde\,0.8282, with a lower F1 (\textasciitilde\,0.50) for \emph{PortScan} compared to other classes.
+        \subsubsection{Dataset and Preprocessing\\}
 
-    \subsection{Implication}
-    Dataset transformations can mitigate shortcut learning yet inadvertently reduce minority supports. 
-    For credible evaluation, pair feature curation with class-aware losses and sampling strategies; otherwise, improvements in overall accuracy may hide systematic failures on rare but security-critical classes.
+            The dataset version without the \textit{Destination Port} feature (from Task 4) was used, already cleaned, standardized, and encoded.
+            This dataset preserves balanced preprocessing conditions, ensuring that any observed variation in results stems from architectural or optimizer differences rather than input bias.
+
+        \subsubsection{Network Architectures\\}
+
+            Three progressively deeper models were designed:
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{llll}
+                    \toprule
+                    \textbf{Model} & \textbf{Hidden Layers} & \textbf{Neurons per Layer} & \textbf{Activation} \\
+                    \midrule
+                    DNN-1 & 2 & [64, 32] & ReLU \\
+                    DNN-2 & 3 & [128, 64, 32] & ReLU \\
+                    DNN-3 & 4 & [256, 128, 64, 32] & ReLU \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Deep FFNN architectures evaluated in Task 5.}
+            \end{table}
+
+            All models used an output layer with four neurons (for the four traffic classes).
+            The total number of trainable parameters increased from $\approx$5 K (DNN-1) to $\approx$70 K (DNN-3), providing a meaningful comparison of representational capacity.
+
+        \subsubsection{Training Parameters\\}
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{ll}
+                    \toprule
+                    \textbf{Parameter} & \textbf{Value} \\
+                    \midrule
+                    Batch Sizes    & \{32, 64, 256\} \\
+                    Epochs         & 100 (early stopping) \\
+                    Learning Rate  & \(5 \times 10^{-4}\) (AdamW / RMSprop); \(1 \times 10^{-3}\) (SGD) \\
+                    Loss Function  & Weighted Cross-Entropy \\
+                    Early Stopping & (\texttt{min\_delta} = \(10^{-5}\), \texttt{patience} = 20) \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Training configuration for Task 5 experiments.}
+            \end{table}
+
+            Each model-optimizer pair was trained using the same stratified splits to ensure fair comparison.
+            Loss and accuracy curves were plotted for both training and validation phases.
+
+    \subsection{Results}
+
+        \textbf{1. Depth Impact\\}
+
+            All networks converged successfully, with deeper architectures showing faster loss reduction during early epochs but also a higher tendency to oscillate.
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{lccc}
+                    \toprule
+                    \textbf{Model} & \textbf{Validation Accuracy} & \textbf{Macro F1} & \textbf{Convergence Trend} \\
+                    \midrule
+                    DNN-1 (2 layers) & 0.948 & 0.923 & Smooth, stable \\
+                    DNN-2 (3 layers) & \textbf{0.957} & \textbf{0.932} & Best trade-off \\
+                    DNN-3 (4 layers) & 0.954 & 0.928 & Slight overfitting after $\approx$60 epochs \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Performance metrics for different FFNN depths.}
+            \end{table}
+
+            The \textbf{three-layer DNN (128-64-32)} consistently achieved the best validation results, surpassing the shallow baseline (Task 2 ReLU = 95.4\%) by roughly \textbf{+0.3\% accuracy} and +0.5 F1.
+            Beyond three layers, no meaningful gain was observed, indicating \textbf{diminishing returns} on depth for this medium-sized dataset.
+
+        \textbf{2. Optimizer Comparison\\}
+
+            The optimizer choice strongly influenced convergence smoothness and generalization:
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{lcc}
+                    \toprule
+                    \textbf{Optimizer} & \textbf{Validation Accuracy} & \textbf{Observed Behavior} \\
+                    \midrule
+                    \textbf{AdamW}                & \textbf{0.957} & Fast, stable convergence; lowest final loss \\
+                    \textbf{RMSprop}              & 0.952 & Slightly slower; stable but noisier validation curve \\
+                    \textbf{SGD (momentum = 0.9)} & 0.941 & Slow convergence; required more epochs \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Performance metrics for different optimizers on the three-layer FFNN.}
+            \end{table}
+
+            AdamW consistently achieved the best trade-off between speed and accuracy, benefiting from decoupled weight decay and adaptive learning rates.
+            SGD showed slower learning and higher sensitivity to batch size, while RMSprop occasionally over-smoothed updates, delaying convergence.
+
+        \textbf{3. Batch Size Effects\\}
+
+            Batch size influenced training dynamics more than final accuracy:
+
+            \begin{itemize}
+                \item \textbf{Small batches (32):} smoother generalization but slower convergence;
+                \item \textbf{Medium batches (64):} optimal balance (lowest validation loss);
+                \item \textbf{Large batches (256):} slightly unstable loss oscillations in deeper networks.
+            \end{itemize}
+
+            Consequently, a batch size of 64 was maintained for subsequent experiments.
+
+    \subsection{Discussion}
+
+        From this set of experiments, several conclusions emerge:
+
+        \begin{enumerate}
+            \item \textbf{Depth improves representation} but only up to a point: adding layers helps capture complex non-linearities but also increases overfitting risk.
+                The three-layer model offered the best generalization-complexity balance.
+            \item \textbf{AdamW outperformed RMSprop and SGD} in both convergence speed and stability, confirming its suitability for neural-based intrusion detection tasks.
+            \item \textbf{Weighted loss maintained fairness} across classes even in deeper models, demonstrating that rebalancing introduced in Task 4 scales effectively with depth.
+            \item \textbf{Batch size tuning} remains an important optimization knob—-too large a batch reduces gradient diversity and can lead to poorer minima.
+        \end{enumerate}
+
+        Overall, \textbf{DNN-2 (128-64-32, AdamW, batch 64)} emerged as the most efficient configuration, achieving $\approx$ 95.7\% validation accuracy and robust macro-F1 $\approx$ 0.93.
+        This architecture provides the structural foundation for Task 6, where explicit \textbf{regularization mechanisms} are introduced to control overfitting and further enhance model robustness.

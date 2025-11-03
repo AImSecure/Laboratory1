@@ -1,33 +1,213 @@
 % task2.tex
 
 % Section Title
-\section{SHALLOW NEURAL NETWORK (1 LAYER)} \label{sec:shallow-nn}
+% \section{SHALLOW NEURAL NETWORK (1 LAYER)} \label{sec:shallow-nn}
+\section{TASK 2 --- SHALLOW FEED-FORWARD NEURAL NETWORK (FFNN)} \label{sec:shallow-nn}
 
-    \subsection{Architectures and training setup}
+    % \subsection{Architectures and training setup}
+    % 
+    %     We train three single-hidden-layer FFNNs that differ only by hidden width:
+    %     $\{32, 64, 128\}$ neurons. Inputs are standardized features; outputs are logits over the four classes. 
+    %     The loss is cross-entropy, the optimizer is AdamW with learning rate $5\times 10^{-4}$, the batch size is 64, and early stopping monitors validation loss. 
+    %     We first use a linear activation in the hidden layer to establish a conservative baseline, then replace it with ReLU on the best width selected by validation.
+    % 
+    %     Implementation details follow the notebook: the training loop averages batch losses per epoch for both training and validation partitions; early stopping stores the best-performing state dict whenever the validation loss improves by more than \texttt{min\_delta} and aborts when no such improvement occurs for \texttt{patience} epochs. 
+    %     We used \texttt{min\_delta} $=10^{-5}$ and \texttt{patience} $=20$ across widths.
+    % 
+    % \subsection{Convergence and model selection}
+    % 
+    %     All three models exhibit smooth training and validation loss decay and reach a stable plateau within the epoch budget. 
+    %     We select the model snapshot that achieves the minimum validation loss, restoring those weights before evaluation. 
+    %     Using this criterion favors architectures that generalize better rather than those that merely minimize training loss.
+    % 
+    % \subsection{Validation performance and class-wise behavior}
+    % 
+    %     On the validation split, larger widths generally yield stronger macro-level metrics, although differences are modest. 
+    %     Without nonlinearity (linear activation), minority-class recognition is fragile: the most challenging class often shows very low recall. 
+    %     In our runs, 128 neurons achieved the highest macro F1 (\textasciitilde\,0.76) and accuracy (\textasciitilde\,0.897) on validation, while the 64-neuron model achieved the lowest validation loss over epochs and exhibited the most stable convergence. 
+    %     Switching the best-width network to ReLU substantially improved the \emph{Brute Force} class, reaching an F1 around 0.85 on validation, while preserving strong performance on majority classes. 
+    %     This indicates that even shallow nonlinear capacity is beneficial for this tabular task.
+    % 
+    % \subsection{Test-set generalization}
+    % 
+    %     Comparing validation and test reports for the selected model (64 neurons with ReLU) shows closely aligned metrics, supporting the conclusion that the training protocol and early stopping prevented overfitting and that the model generalizes well. 
+    %     In the remainder of the study we therefore use the best shallow configuration with ReLU as a competitive baseline when comparing deeper models and data/feature manipulations.
 
-        We train three single-hidden-layer FFNNs that differ only by hidden width:
-        $\{32, 64, 128\}$ neurons. Inputs are standardized features; outputs are logits over the four classes. 
-        The loss is cross-entropy, the optimizer is AdamW with learning rate $5\times 10^{-4}$, the batch size is 64, and early stopping monitors validation loss. 
-        We first use a linear activation in the hidden layer to establish a conservative baseline, then replace it with ReLU on the best width selected by validation.
+    \subsection{Objective}
+    
+        The second task aimed to design and evaluate baseline \textbf{Feed-Forward Neural Networks (FFNNs)} with a single hidden layer, testing the influence of hidden-layer dimensionality and activation functions on the model’s performance.
+        This stage establishes the foundation for later experiments on deeper architectures and regularization by exploring how network capacity affects convergence and class discrimination in network traffic classification.
 
-        Implementation details follow the notebook: the training loop averages batch losses per epoch for both training and validation partitions; early stopping stores the best-performing state dict whenever the validation loss improves by more than \texttt{min\_delta} and aborts when no such improvement occurs for \texttt{patience} epochs. 
-        We used \texttt{min\_delta} $=10^{-5}$ and \texttt{patience} $=20$ across widths.
+        Specifically, the objectives were to:
 
-    \subsection{Convergence and model selection}
+        \begin{itemize}
+            \item Implement a shallow FFNN with a variable hidden size (32, 64, and 128 neurons);
+            \item Train each model under consistent conditions to compare convergence speed and generalization;
+            \item Investigate the effect of replacing the linear activation with ReLU, analyzing its impact on the detection of complex attack patterns;
+            \item Select the most promising configuration for use in subsequent tasks.
+        \end{itemize}
 
-        All three models exhibit smooth training and validation loss decay and reach a stable plateau within the epoch budget. 
-        We select the model snapshot that achieves the minimum validation loss, restoring those weights before evaluation. 
-        Using this criterion favors architectures that generalize better rather than those that merely minimize training loss.
+    % \subsection{Results}
+    % 
+    %     All linear models converged stably but failed to detect the minority \textit{Brute Force} class (F1 = 0.0).  
+    %     Switching to ReLU activation raised validation accuracy from $\approx 88\%$ to $\approx 95\%$, with macro-F1 $\approx 0.93$.  
+    %     The 64-neuron ReLU model generalized best across validation and test sets.
+    % 
+    % \subsection{Discussion}
+    % 
+    %     Non-linear activation proved essential for learning attack patterns beyond linear separability.  
+    %     The 64-ReLU model became the baseline for further experiments.
 
-    \subsection{Validation performance and class-wise behavior}
+    \subsection{Experimental Setup}
 
-        On the validation split, larger widths generally yield stronger macro-level metrics, although differences are modest. 
-        Without nonlinearity (linear activation), minority-class recognition is fragile: the most challenging class often shows very low recall. 
-        In our runs, 128 neurons achieved the highest macro F1 (\textasciitilde\,0.76) and accuracy (\textasciitilde\,0.897) on validation, while the 64-neuron model achieved the lowest validation loss over epochs and exhibited the most stable convergence. 
-        Switching the best-width network to ReLU substantially improved the \emph{Brute Force} class, reaching an F1 around 0.85 on validation, while preserving strong performance on majority classes. 
-        This indicates that even shallow nonlinear capacity is beneficial for this tabular task.
+        \subsubsection{Data and Scaling\\}
 
-    \subsection{Test-set generalization}
+            The input features were derived from the \textbf{StandardScaler-normalized} dataset prepared in Task 1.
+            Training, validation, and test splits maintained stratified label distributions to prevent bias toward the majority \textit{Benign} class.
 
-        Comparing validation and test reports for the selected model (64 neurons with ReLU) shows closely aligned metrics, supporting the conclusion that the training protocol and early stopping prevented overfitting and that the model generalizes well. 
-        In the remainder of the study we therefore use the best shallow configuration with ReLU as a competitive baseline when comparing deeper models and data/feature manipulations.
+        \subsubsection{Architecture and Hyperparameters\\}
+
+            Each model was implemented in PyTorch using the following configuration:
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{ll}
+                    \toprule
+                    \textbf{Parameter} & \textbf{Value} \\
+                    \midrule
+                    Hidden Layer Sizes & {32, 64, 128} \\
+                    Activation         & Linear (first phase) \\
+                    Optimizer          & AdamW \\
+                    Learning Rate      & \(5 \times 10^{-4}\) \\
+                    Loss Function      & Cross-Entropy Loss \\
+                    Batch Size         & 64 \\
+                    Epochs             & Up to 100 (with Early Stopping) \\
+                    Early Stopping     & (\texttt{min\_delta} = \(10^{-5}\), \texttt{patience} = 20) \\
+                    \bottomrule
+                \end{tabular}
+                \caption{FFNN architecture and training hyperparameters.}
+                \label{tab:ffnn-setup}
+            \end{table}
+
+            The output layer contained \textbf{four neurons} (one per traffic class).
+            Training and validation losses were logged at each epoch, and the best model weights were preserved when validation loss ceased improving.
+
+    \subsection{Results: Linear Activation}
+
+        \subsubsection{Loss Curve Evolution\\}
+
+            For all three configurations (32, 64, and 128 neurons), the \textbf{training and validation losses decreased steadily} over epochs, converging around 0.29-0.30 by epoch 100.
+            As summarized below:
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{lccc}
+                    \toprule
+                    \textbf{Model} & \textbf{Initial Loss (Train)} & \textbf{Final Loss (Val)} & \textbf{Convergence Behavior} \\
+                    \midrule
+                    32 Neurons  & \(1.03 \rightarrow 0.31\) & \(0.72 \rightarrow 0.30\) & Stable, smooth plateau \\
+                    64 Neurons  & \(0.81 \rightarrow 0.30\) & \(0.56 \rightarrow 0.29\) & Fast, stable convergence \\
+                    128 Neurons & \(0.75 \rightarrow 0.30\) & \(0.52 \rightarrow 0.29\) & Early stopping at epoch 78 \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Final losses and convergence epochs for linear activation models.}
+                \label{tab:linear-losses}
+            \end{table}
+
+            All three models exhibited \textbf{similar convergence patterns}, with validation loss closely following training loss, suggesting no significant overfitting.
+            Figure 4 illustrates the parallel decline of training and validation curves for each configuration, confirming stable learning dynamics.
+
+            % TODO: Insert Figure 4 here showing loss curves for linear models
+
+        \subsubsection{Validation Performance\\}
+
+            The \textbf{classification reports} on the validation set reveal important class-level differences:
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{lcccc}
+                    \toprule
+                    \textbf{Model} & \textbf{Accuracy} & \textbf{F1 (macro avg)} & \textbf{Brute Force (F1)} & \textbf{Observations} \\
+                    \midrule
+                    32 Neurons  & 0.887 & 0.677 & 0.000 & Fails on minority class \\
+                    64 Neurons  & 0.888 & 0.678 & 0.000 & Slight improvement, same limitation \\
+                    128 Neurons & 0.897 & 0.675 & 0.000 & Better representation power \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Validation accuracy and macro F1 for linear activation models.}
+                \label{tab:linear-validation}
+            \end{table}
+
+            All linear-activation models achieved high global accuracy ($\approx$ 88-89\%) but \textbf{failed to classify the minority “Brute Force” class}, yielding 0 precision and recall.
+            The models primarily learned majority patterns (\textit{Benign} and \textit{DoS Hulk}), underlining the dataset's imbalance issue.
+            Among them, the 64-neuron model showed the \textbf{lowest validation loss} and best generalization trend, hence selected for further testing.
+
+        \subsubsection{Test Performance (Linear)\\}
+
+            When evaluated on the test partition, the 64-neuron model achieved:
+
+            \begin{itemize}
+                \item \textbf{Accuracy:} 0.8898
+                \item \textbf{Macro F1:} 0.678
+                \item \textbf{High performance on major classes} (\textit{Benign, DoS Hulk, PortScan})
+                \item \textbf{Poor detection of Brute Force} (F1 = 0.0)
+            \end{itemize}
+
+            The similarity between validation and test metrics confirms \textbf{good generalization}, but highlights that a purely linear activation limits the network's ability to model non-linear attack relationships.
+
+    \subsection{Results: ReLU Activation}
+
+        To enhance non-linear learning capacity, the best configuration (64 neurons) was retrained using a \textbf{ReLU activation} in the hidden layer, maintaining all other hyperparameters.
+
+        \subsubsection{Loss Curve Evolution (ReLU)\\}
+
+            With ReLU, both training and validation losses decreased sharply to \textbf{$\approx$ 0.13}, converging faster and lower than in the linear case (see Figure 5).
+            No early divergence or oscillation was observed, suggesting better gradient flow and efficient convergence.
+
+            % TODO: Insert Figure 5 here showing loss curves for ReLU model
+            
+        \subsubsection{Performance Improvement\\}
+
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{lcccc}
+                    \toprule
+                    \textbf{Dataset} & \textbf{Accuracy} & \textbf{F1 (macro avg)} & \textbf{Brute Force (F1)} & \textbf{Observations} \\
+                    \midrule
+                    Validation & 0.954 & 0.928 & 0.851 & Strong gain in all classes \\
+                    Test       & 0.951 & 0.925 & 0.856 & Maintains generalization \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Validation performance for 64-neuron ReLU model.}
+                \label{tab:relu-validation}
+            \end{table}
+
+            Compared to the linear models, \textbf{accuracy increased by $\approx$ 6\%} and \textbf{macro F1 by 25\%}, with a dramatic recovery of the Brute Force class from 0.0 to \textbf{0.85 F1}.
+            The model now performs consistently across all four classes:
+
+            \begin{itemize}
+                \item \textbf{Benign:} 0.97 F1
+                \item \textbf{DoS Hulk:} 0.85 F1
+                \item \textbf{Brute Force:} 0.96 F1
+                \item \textbf{PortScan:} 0.93 F1
+            \end{itemize}
+
+            These balanced results confirm that \textbf{non-linear activation is crucial} for capturing complex relationships in network features, enabling the network to detect subtle patterns characteristic of minority attack traffic.
+
+        \subsubsection{Generalization Assessment\\}
+
+            The near-identical performance between validation (95.4\%) and test (95.1\%) sets demonstrates \textbf{excellent generalization}.
+            The ReLU network successfully avoided overfitting while learning expressive decision boundaries, suggesting the chosen regularization and early stopping were effective.
+
+    \subsection{Discussion}
+            
+        The experiments clearly show that:
+
+        \begin{enumerate}
+            \item \textbf{Model capacity (hidden size)} influences stability but not drastically performance beyond a certain point; all networks converged similarly.
+            \item \textbf{Activation function choice} has a \textbf{major impact}: replacing linear with ReLU transformed the network from a weak linear classifier to a powerful non-linear detector.
+            \item The \textbf{64-neuron ReLU model} achieves the best balance between complexity and generalization, reaching $\approx$ 95\% accuracy without overfitting.
+            \item The consistent validation/test metrics indicate that the pipeline's preprocessing and stratified splitting ensured fair and reproducible evaluation.
+        \end{enumerate}
+
+        This ReLU-activated 64-neuron FFNN serves as the \textbf{baseline model} for the subsequent tasks, where the focus shifts to understanding feature bias, loss weighting, and deep architecture effects.

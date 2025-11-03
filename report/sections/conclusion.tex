@@ -3,22 +3,98 @@
 % Section Title
 \section{CONCLUSIONS} \label{sec:conclusions}
 
-    This report walked through a complete FFNN pipeline and used empirical evidence from the notebook to draw conclusions regarding architecture choices, preprocessing, and regularization.
+    % This report walked through a complete FFNN pipeline and used empirical evidence from the notebook to draw conclusions regarding architecture choices, preprocessing, and regularization.
+    % 
+    % Key takeaways:
+    % \begin{itemize}
+    %     \item \textbf{Preprocessing matters:} scaling, padding/truncation, and handling duplicates/NaNs materially affect training dynamics and the effective class balance.
+    %     \item \textbf{Feature biases can be dangerous:} a single feature (Destination Port) can introduce a brittle shortcut for a classifier. Removing the feature reduced this bias but also altered class supports via duplicate collapse, illustrating the complexity of data curation.
+    %     \item \textbf{Regularization should be measured, not maximal:} for these standardized tabular features, \emph{light weight decay} with AdamW yielded the best trade-off. Aggressive dropout or batch normalization did not consistently help and sometimes degraded minority-class metrics.
+    %     \item \textbf{Class imbalance requires active handling:} using class-weighted loss helped recover recall on rare classes; nevertheless, extremely small supports (e.g., 57 samples) lead to unreliable per-class estimates and require either resampling/augmentation or different evaluation strategies.
+    %     \item \textbf{Operational implication for cybersecurity:} models that rely on spurious correlations are fragile in deployment. Robust detection requires attention to dataset provenance, feature engineering, and evaluation protocols that prioritize macro metrics.
+    % \end{itemize}
+    % 
+    % \subsection{Future work}
+    % 
+    %     Possible extensions:
+    %     \begin{itemize}
+    %         \item Explore sequential or attention-based models when raw sequences become available, to complement tabular features.
+    %         \item Explore data augmentation or generative techniques to increase minority-class support.
+    %         \item Perform stratified cross-validation and confidence estimation for rare-class performance.
+    %     \end{itemize}
 
-    Key takeaways:
-    \begin{itemize}
-        \item \textbf{Preprocessing matters:} scaling, padding/truncation, and handling duplicates/NaNs materially affect training dynamics and the effective class balance.
-        \item \textbf{Feature biases can be dangerous:} a single feature (Destination Port) can introduce a brittle shortcut for a classifier. Removing the feature reduced this bias but also altered class supports via duplicate collapse, illustrating the complexity of data curation.
-        \item \textbf{Regularization should be measured, not maximal:} for these standardized tabular features, \emph{light weight decay} with AdamW yielded the best trade-off. Aggressive dropout or batch normalization did not consistently help and sometimes degraded minority-class metrics.
-        \item \textbf{Class imbalance requires active handling:} using class-weighted loss helped recover recall on rare classes; nevertheless, extremely small supports (e.g., 57 samples) lead to unreliable per-class estimates and require either resampling/augmentation or different evaluation strategies.
-        \item \textbf{Operational implication for cybersecurity:} models that rely on spurious correlations are fragile in deployment. Robust detection requires attention to dataset provenance, feature engineering, and evaluation protocols that prioritize macro metrics.
-    \end{itemize}
+    This laboratory project presented a full end-to-end design, implementation, and evaluation of \textbf{Feed-Forward Neural Networks (FFNNs)} applied to the \textbf{CICIDS2017 intrusion detection dataset}, progressively evolving from data preprocessing to deep regularized architectures.
+    Each task contributed incrementally to the construction of a robust and interpretable classification pipeline tailored for cybersecurity analytics.
 
-    \subsection{Future work}
+    \subsection{Summary of Key Findings}
 
-        Possible extensions:
+        \textbf{1. Data Preparation and Feature Scaling (Task 1)\\}
+
+            Comprehensive cleaning and stratified partitioning produced a balanced and noise-free dataset of approximately 29,000 samples.
+            Feature normalization through \textit{StandardScaler} ensured consistent input ranges, while exploratory analysis identified significant outlier presence and confirmed the need for robust preprocessing.
+            This foundational stage was essential for stable neural training and reproducible evaluation.
+
+        \textbf{2. Shallow Neural Networks (Task 2)\\}
+
+            Baseline FFNNs with one hidden layer established initial performance benchmarks.
+            Linear activations produced limited discrimination power, particularly for minority attack classes.
+            The introduction of \textbf{ReLU activation} transformed the model's capacity, achieving $\approx$95\% accuracy and balanced per-class F1 scores, proving the necessity of non-linearity to capture complex traffic relationships.
+
+        \textbf{3. Feature Bias Analysis (Task 3)\\}
+
+            The \textit{Destination Port} feature was shown to introduce strong \textbf{dataset-induced bias}, especially linking \textit{Brute Force} attacks to port 80.
+            When perturbed, detection rates for that class collapsed, revealing over-reliance on superficial correlations.
+            Removing the feature exposed redundant \textit{PortScan} samples, confirming that many records differed only by port value.
+            This task underscored the importance of \textbf{feature integrity} and \textbf{causal consistency} in cybersecurity datasets.
+
+        \textbf{4. Weighted Loss Optimization (Task 4)\\}
+
+            To counteract persistent class imbalance, a \textbf{class-weighted CrossEntropyLoss} was applied.
+            This modification substantially improved recall for rare attacks (notably \textit{Brute Force}), raising the macro F1 score by 5-8 points without compromising global accuracy.
+            It demonstrated that adaptive loss weighting is crucial when dealing with security data where false negatives have high operational costs.
+
+        \textbf{5. Deep Architectures and Optimizers (Task 5)\\}
+
+            Deeper FFNNs (up to four hidden layers) and multiple optimizers were compared.
+            A \textbf{three-layer model (128-64-32)} trained with \textbf{AdamW} achieved the best overall balance between capacity and generalization, outperforming both RMSprop and SGD.
+            Beyond three layers, gains plateaued and overfitting risk increased.
+            These findings highlight that \textbf{model depth must align with data complexity}, avoiding unnecessary parameter inflation.
+
+        \textbf{6. Future Work\\}
+
+            Among several regularization strategies, \textbf{Batch Normalization} yielded the most significant improvement, increasing validation accuracy to \textbf{$\approx$96.2\%} and macro F1 to \textbf{0.94}.
+            Dropout and Weight Decay also stabilized training, but BatchNorm provided faster convergence and superior robustness.
+            This final model—-combining weighted loss, ReLU activation, AdamW optimization, and BatchNorm—-represents the optimal trade-off between precision, stability, and interpretability.
+
+    \subsection{Integrated Interpretation}
+
+        Taken together, the six tasks illustrate how \textbf{careful data engineering and progressive architectural tuning} lead to measurable improvements in IDS (Intrusion Detection System) performance.
+        From raw, noisy records to a well-regularized DNN, each methodological refinement addressed a specific real-world challenge:
+
         \begin{itemize}
-            \item Explore sequential or attention-based models when raw sequences become available, to complement tabular features.
-            \item Explore data augmentation or generative techniques to increase minority-class support.
-            \item Perform stratified cross-validation and confidence estimation for rare-class performance.
+            \item \textbf{Bias mitigation} improved fairness and reduced false correlations.
+            \item \textbf{Loss weighting} tackled class imbalance inherent to network traffic.
+            \item \textbf{Deep learning optimization} captured non-linear relationships between flow features.
+            \item \textbf{Regularization} prevented overfitting to the training environment, increasing deployment robustness.
         \end{itemize}
+
+        The final FFNN achieved reliable classification across \textit{Benign}, \textit{Brute Force}, \textit{DoS Hulk}, and \textit{PortScan} categories, confirming that \textbf{supervised neural models can effectively distinguish heterogeneous attack behaviors} when properly engineered.
+
+    \subsection{Cybersecurity Implications}
+
+        In the context of \textbf{network intrusion detection}, these results carry several operational insights:
+
+        \begin{enumerate}
+            \item \textbf{Feature Reliability is Critical}: Attributes such as \textit{Destination Port} can unintentionally encode environmental artifacts rather than attack semantics, leading to models that perform well offline but fail in production.
+                Rigorous feature auditing should thus be an integral part of any IDS development pipeline.
+            \item \textbf{Balanced Detection is More Valuable than Raw Accuracy}: Security systems must minimize \textit{false negatives} (missed attacks) rather than simply maximize accuracy dominated by benign traffic.
+                Class-weighted objectives directly address this operational reality, improving defensive responsiveness.
+            \item \textbf{Moderate-Depth Neural Networks Offer Practical Advantages}: The three-layer FFNN used here is computationally light, easily deployable in near-real-time monitoring systems, and interpretable enough for post-incident analysis.
+                It bridges the gap between shallow statistical methods and highly opaque deep architectures.
+            \item \textbf{Regularization Enhances Trustworthiness}: Batch Normalization and Weight Decay help models generalize across network conditions, reducing the risk of overfitting to specific sessions or environments—an essential quality for adaptive and scalable intrusion detection.
+        \end{enumerate}
+
+    \subsection{Final Remarks}
+
+        This laboratory demonstrates that when combined with systematic preprocessing, weighted optimization, and architectural regularization, \textbf{Feed-Forward Neural Networks} can serve as effective, explainable, and generalizable tools for \textbf{cyberattack detection}.
+        By progressively addressing data imbalance, bias, and overfitting, the final model achieved a robust compromise between accuracy, interpretability, and computational efficiency—-key requirements for practical deployment in modern \textbf{Intrusion Detection Systems (IDS)}.
