@@ -3,16 +3,11 @@
 % Section Title
 \section{INTRODUCTION} \label{sec:introduction}
 
-    This laboratory investigates Feed-Forward Neural Networks (FFNNs) for intrusion detection on tabular, flow-level features derived from CICIDS2017. 
-    Our objective is twofold: first, to engineer a transparent and reproducible supervised-learning pipeline in PyTorch, and second, to quantify how modeling choices influence both optimization behavior and generalization in presence of class imbalance and feature-induced biases.
 
-    We proceed in six steps. We start by establishing a robust preprocessing protocol that removes missing values and duplicates, handles non-finite entries, and applies standardization fitted on the training split; we also inspect distributions and outliers to justify the scaling choice. 
-    We then study shallow architectures (one hidden layer) and show how activation functions (linear vs. ReLU) alter minority-class recognition without compromising stability. 
-    Next, we expose a spurious correlation between the feature \emph{Destination Port} and the \emph{Brute Force} label, demonstrating that a small perturbation at inference time (changing port 80 to 8080) degrades performance markedly; removing the feature further reveals how duplicate collapse reshapes class supports.
+This laboratory focuses on deploying feed-forward neural networks for intrusion detection within the CICIDS2017 benchmark. The assignment emphasises disciplined experiment design: clarify preprocessing assumptions, measure how architectural depth influences classification, and evaluate strategies that mitigate class imbalance. The overall goal is to gain practical insight into how model capacity, hyperparameters, and regularization jointly shape detection performance in cybersecurity settings.
 
-    Building on these insights, we adopt class-weighted cross-entropy to improve macro-level metrics and minority recall, extend the architecture to deeper FFNNs to explore capacity, and analyze the impact of batch size and optimizer. 
-    Finally, we quantify overfitting and evaluate regularization strategies. 
-    Across the study, AdamW emerges as the most reliable optimizer, smaller batches tend to generalize better at higher computation cost, and light weight decay provides the best regularization balance for this tabular task.
+\noindent The provided dataset captures flows spanning benign traffic and three attack families—PortScan, DoS Hulk, and Brute Force—collected during the CICIDS2017 campaign. From the original feature space, seventeen attributes were retained to balance relevance and tractability: timing statistics, directional packet metrics, and protocol-level indicators such as the destination port and SYN flag counts. The data exhibits moderate imbalance and includes duplicated flows, motivating both careful cleaning and the later analysis on the inductive bias introduced by port-based attributes.
 
-    Beyond raw metrics, the broader lesson for AI and Cybersecurity is methodological: reliable evaluation requires attention to data provenance, feature biases, and class supports; principled preprocessing and targeted regularization often matter as much as architectural complexity. 
-    Throughout the report we report not only accuracy but also per-class precision/recall and macro/weighted F1-scores to capture minority-class behavior, and we use early stopping with validation-based model selection to prevent overfitting.
+\noindent This is the outline of the report: Section~\ref{sec:data-analysis-preprocessing} details the preprocessing pipeline and motivates the normalization and split strategy. Section~\ref{sec:shallow-nn} introduces single-layer baselines and examines activation choices, while Section~\ref{sec:impact-dest-port} studies the effect of manipulating and removing the destination port feature. Sections~\ref{sec:impact-loss-function} through~\ref{sec:overfitting-regularization} expand the networks with weighted losses, deeper architectures, optimizer comparisons, and regularization controls. The report closes with Section~\ref{sec:conclusions}, summarising findings and outlining future work.
+
+    

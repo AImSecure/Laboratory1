@@ -3,20 +3,10 @@
 % Section Title
 \section{THE IMPACT OF THE LOSS FUNCTION} \label{sec:impact-loss-function}
 
-    \subsection{Motivation and setup}
+\subsection{Baseline Cross-Entropy Evaluation}
 
-        After removing \texttt{Destination Port} (Task~\ref{sec:impact-dest-port}), class imbalance becomes more pronounced. 
-        To prevent the classifier from ignoring rare classes, we switch from an unweighted cross-entropy to a class-weighted one. 
-        We estimate weights with \texttt{compute\_class\_weight(class\_weight = 'balanced')} using \emph{only} the training labels, convert them to a tensor, and pass them to \texttt{nn.CrossEntropyLoss}.
+\subsection{Class Weight Estimation Procedure}
 
-    \subsection{Effects on training dynamics and metrics}
+\subsection{Weighted Loss Performance Analysis}
 
-        Class weighting slightly alters optimization but consistently improves macro-averaged F1 by increasing recall on under-represented classes. 
-        Overall accuracy remains similar or decreases marginally because errors on the majority class are penalized more heavily, but the resulting classifier is better aligned with the security objective of detecting rare attacks. 
-        In our runs, the weighted loss materially improved the recognition of the rarest classes without destabilizing convergence. 
-        Qualitatively, we observe a redistribution of errors from rare to frequent classes, which is an acceptable trade-off for security-sensitive detection.
-
-    \subsection{Guidance}
-
-        In intrusion-detection settings with skewed class distributions, class-weighted losses are a simple and effective default. 
-        They should be paired with stratified splits, per-class reporting, and---when supports are very small---resampling or augmentation to produce reliable estimates.
+    

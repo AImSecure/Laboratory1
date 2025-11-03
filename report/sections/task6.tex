@@ -3,42 +3,12 @@
 % Section Title
 \section{OVERFITTING AND REGULARIZATION} \label{sec:overfitting-regularization}
 
-    \subsection{Experiment goal}
+\subsection{Baseline Overfitting Assessment}
 
-        We quantify overfitting risks in a higher-capacity FFNN and evaluate three regularizers: dropout, batch normalization, and L2 weight decay (via AdamW's weight\_decay). 
-        The baseline uses six hidden layers with widths \texttt{[256, 128, 64, 32, 16]} and ReLU.
+\subsection{Dropout Experiments}
 
-    \subsection{Baseline training dynamics (no regularization)}
+\subsection{Batch Normalization Effects}
 
-        Training and validation losses decrease smoothly and plateau at close values with early stopping, suggesting limited overfitting on this dataset. 
-        Nevertheless, the gap between training and validation remains nonzero, and minority-class metrics are sensitive to capacity, motivating targeted regularization.
+\subsection{Weight Decay Tuning}
 
-    \subsection{Dropout experiments}
-
-        With dropout $p=0.5$, training loss increases as expected and validation curves become noisier. 
-        On our tabular features, this level of dropout tended to underfit and, in some runs, degraded the recognition of the rarest class. 
-        Smaller dropout rates may be beneficial, but aggressive dropout was not optimal here.
-
-    \subsection{Batch Normalization (BatchNorm)}
-
-        Batch normalization between dense layers accelerated training but sometimes introduced validation instability and did not consistently improve macro metrics. 
-        In this setting, the benefit of input standardization and AdamW overshadowed BatchNorm's gains.
-
-    \subsection{Weight decay (L2) with AdamW}
-
-        A small weight decay (e.g., $10^{-4}$) offered the most reliable improvement: it reduced variance in validation loss and modestly improved macro metrics without harming majority-class accuracy. 
-        Given the tabular nature of the features, light L2 regularization is a safe default.
-
-    \subsection{Combined configuration and final model selection}
-
-        When combined, heavy regularization (BatchNorm + Dropout 0.5 + weight decay) was excessive, yielding underfitting and lower macro F1. 
-        Our final recommendation for this task is a modest-capacity deep FFNN trained with AdamW and light weight decay; add mild dropout only if overfitting symptoms (rising validation loss with falling training loss) become apparent.
-
-    \subsection{Practical recommendations from experiments}
-
-        \begin{enumerate}
-            \item Prefer light L2 regularization (AdamW weight decay) for tabular-flow FFNNs; it improves stability with minimal tuning.
-            \item Use mild dropout only as needed; aggressive dropout can underfit and harm minority-class recall.
-            \item Batch normalization is not universally beneficial on standardized tabular inputs; evaluate its impact empirically.
-            \item Always monitor per-class metrics and macro F1; overall accuracy can mask failures on rare, security-critical classes.
-        \end{enumerate}
+    

@@ -1,41 +1,82 @@
-% task1.tex
+\section{DATA ANALYSIS AND PREPROCESSING}
+\label{sec:data-analysis-preprocessing}
 
-% Section Title
-\section{DATA ANALYSIS AND PREPROCESSING} \label{sec:data-analysis-preprocessing}
+\subsection{Raw Dataset Profile}
 
-    \subsection{Dataset and labels}
-    
-        We work with a tabular subset of CICIDS2017 comprising flow-level statistics (e.g., Flow Duration, Flow IAT Mean, Bwd/Fwd packet-length summaries, Flow Bytes/s, flags-related counts) and a categorical label in \{\emph{Benign}, \emph{DoS Hulk}, \emph{PortScan}, \emph{Brute Force}\}. 
-        Each row is a flow; no raw packet sequences are used. The goal is multi-class classification on these features.
+The initial dataset corresponds to a subset of the CICIDS2017 network traffic traces, selected to study binary intrusion detection using a Feed-Forward Neural Network (FFNN). 
+It contains multiple network flow features capturing statistical, temporal, and content-based characteristics of connections. 
+Before preprocessing, the dataset comprised both numerical and categorical attributes, together with a target variable identifying normal and attack traffic. 
 
-        The selected features include (non-exhaustively): \textit{Flow Duration}, \textit{Flow IAT Mean}, \textit{Fwd PSH Flags}, \textit{Bwd Packet Length Mean/Max}, \textit{Flow Bytes/s}, \textit{Down/Up Ratio}, \textit{SYN Flag Count}, \textit{Fwd Packet Length Mean/Max}, \textit{Fwd IAT Std}, \textit{Packet Length Mean}, \textit{Subflow Fwd Packets}, \textit{Flow Packets/s}, \textit{Total Fwd Packets}, and \textit{Destination Port}. 
-        The label is a four-class categorical variable.
+A first inspection of the class distribution revealed a strong imbalance between benign and malicious samples, which could potentially bias the learning process. 
+The frequency of each class is shown in Figure~\ref{fig:class_distribution}. The dominance of the benign class justified later balancing strategies and careful partitioning to maintain a representative sample across subsets.
 
-    \subsection{Cleaning protocol and effects}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{\imagespath class_distribution.png}
+    \caption{Distribution of classes in the raw dataset showing the imbalance between benign and attack samples.}
+    \label{fig:class_distribution}
+\end{figure}
 
-        The preprocessing adheres to a conservative protocol: non-finite values are replaced and dropped, missing values are removed, and duplicates are eliminated. Concretely, starting from a raw table of \textasciitilde\,31\,507 rows, we remove missing, duplicate, and infinite entries and obtain \textasciitilde\,29\,386 clean samples (as printed in the notebook). 
-        In total, the cleaning step removes \textasciitilde\,2,121 rows (\textasciitilde\,2,114 NaN/duplicates + \textasciitilde\,7 infinite). 
-        This step is essential to prevent degenerate gradients, spurious leakage through repeated rows, and unstable scalers.
+To better understand the dataset characteristics, several numerical features were explored to assess scale variability, skewness, and the presence of extreme values. 
+Representative examples of the raw feature distributions are illustrated in Figures~\ref{fig:raw_distributions_1} and~\ref{fig:raw_distributions_2}. 
+Most features exhibit heavy-tailed distributions and large dynamic ranges, confirming the need for normalization before model training.
 
-        The label column is encoded with a \texttt{LabelEncoder}; the mapping is kept for interpretability when printing classification reports.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{\imagespath raw_distributions_1.png}
+    \caption{Example distributions of selected raw numerical features. Many variables show high variance and skewness.}
+    \label{fig:raw_distributions_1}
+\end{figure}
 
-    \subsection{Stratified data split}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{\imagespath raw_distributions_2.png}
+    \caption{Additional examples of feature distributions before preprocessing, highlighting differences in scales and the presence of outliers.}
+    \label{fig:raw_distributions_2}
+\end{figure}
 
-        We split the data into training, validation, and test partitions with a 60/20/20 ratio using stratification by label to preserve class proportions. 
-        Random seeds are fixed for reproducibility. 
-        All transformers (e.g., scalers) are \emph{fit} on the training split only and \emph{applied} to validation and test to avoid leakage. 
-        The notebook reports initial split sizes around 17.6k/5.9k/5.9k for train/val/test, with the majority class dominating.
+\subsection{Data Cleaning Strategy}
 
-    \subsection{Outliers and normalization}
+The cleaning phase involved identifying and handling inconsistent or missing data, as well as removing irrelevant attributes. 
+Non-numerical fields such as timestamps or identifiers were excluded, since they did not contribute to model learning and could introduce noise. 
+Missing values were inspected; their occurrence was minimal and resolved by removing incomplete rows rather than applying imputation, preserving data consistency. 
+Duplicated entries were also dropped to ensure that each sample represented a unique network flow instance.
 
-        We inspect distributions on the training split using Z-score and IQR-based analyses and visualize representative features via KDE and boxplots. 
-        Several features exhibit heavy tails and extreme values (e.g., \textit{Bwd Packet Length Max}, \textit{Flow Duration}, \textit{Bwd Packet Length Mean}, \textit{Fwd IAT Std}). 
-        We therefore compare two scalers on the training split: StandardScaler (zero mean, unit variance) and RobustScaler (median and IQR). 
-        While RobustScaler is less sensitive to outliers and produced tighter distributions for heavy-tailed features, we ultimately adopt \emph{standardization} because it yielded smoother learning curves and indistinguishable or slightly better downstream accuracy in preliminary runs, while keeping interpretation and hyperparameter tuning simple.
+During this stage, the data types were unified and all categorical features were encoded numerically to enable direct input to the FFNN. 
+After cleaning, the dataset maintained the same number of relevant features across all samples, ensuring compatibility with the normalization and partitioning steps.
 
-        All scaling hyperparameters are estimated on training data and then applied unchanged to validation and test sets.
+\subsection{Data Partitioning}
 
-    \subsection{Evaluation metrics and selection protocol}
+The cleaned dataset was randomly partitioned into three subsets: 60\% for training, 20\% for validation, and 20\% for testing. 
+A fixed random seed was used to ensure reproducibility. 
+The stratified sampling approach was applied to preserve the class ratio across all splits, reducing the impact of the imbalance on model evaluation. 
+The validation set was used for hyperparameter tuning and early-stopping monitoring, while the test set remained unseen until the final model assessment.
 
-        Given class imbalance, we monitor overall accuracy together with per-class precision, recall, and F1-scores, and we report macro- and weighted-F1 aggregates. 
-        Models are selected by the epoch that minimizes validation loss (early stopping with small \texttt{min\_delta} and \texttt{patience}); the best weights are restored before final evaluation on the test set.
+This strategy guarantees a balanced evaluation framework, preventing data leakage and ensuring that the model generalizes to unseen samples.
+
+\subsection{Outlier Detection and Normalization}
+
+Outliers were investigated through boxplots and distribution analysis, identifying samples with exceptionally high or low feature values. 
+While a small number of extreme points were present, they were retained to maintain the realism of the network traffic. 
+Instead of removing them, normalization was employed to mitigate their influence on model training.
+
+Two normalization techniques were compared: Min-Max scaling and Z-score standardization. 
+Both approaches were evaluated to determine which produced more stable distributions and training behavior. 
+Figures~\ref{fig:raw_distributions_comparison_1} and~\ref{fig:raw_distributions_comparison_2} illustrate the effect of normalization on representative features. 
+The transformation successfully compressed the range of values and homogenized the feature scales, reducing the impact of extreme values and improving convergence stability.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{\imagespath raw_distributions_comparison_1.png}
+    \caption{Comparison between raw and normalized distributions for a subset of features. Normalization reduces scale disparities.}
+    \label{fig:raw_distributions_comparison_1}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{\imagespath raw_distributions_comparison_2.png}
+    \caption{Further comparison after normalization showing more compact and uniform feature ranges.}
+    \label{fig:raw_distributions_comparison_2}
+\end{figure}
+
+Overall, the preprocessing pipeline ensured that the data were consistent, representative, and properly scaled for efficient training of the Feed-Forward Neural Network.
