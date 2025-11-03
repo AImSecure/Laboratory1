@@ -1,16 +1,45 @@
-% task2.tex
-
-% Section Title
-\section{SHALLOW NEURAL NETWORK (1 LAYER)} \label{sec:shallow-nn}
+\section{SHALLOW NEURAL NETWORK (1 LAYER)}
+\label{sec:shallow-nn}
 
 \subsection{Model Configuration}
+A single-layer Feed-Forward Neural Network (FFNN) was trained with 32, 64, and 128 neurons to study the effect of network size on learning and generalization. Each model used the Adam optimizer (lr = 0.001), linear activation function, and early stopping over 100 epochs, minimizing categorical cross-entropy on the same partitions defined in Task~\ref{sec:data-analysis-preprocessing}.
 
 \subsection{Training Dynamics}
+The training and validation loss curves (Figures~\ref{fig:loss_32}--\ref{fig:loss_128}) show consistent convergence for all models, with rapid loss reduction during early epochs followed by stable plateaus. No overfitting was observed. The 64-neuron network achieved the lowest validation loss (\textasciitilde 0.289), while the 128-neuron model reached a similar value before early stopping at epoch 78.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task2/loss_curves_model_32.png}
+        \caption{32 neurons}
+        \label{fig:loss_32}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task2/loss_curves_model_64.png}
+        \caption{64 neurons}
+        \label{fig:loss_64}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task2/loss_curves_model_128.png}
+        \caption{128 neurons}
+        \label{fig:loss_128}
+    \end{subfigure}
+    \caption{Training and validation losses for single-layer FFNNs.}
+    \label{fig:loss_comparison}
+\end{figure}
 
 \subsection{Validation Performance Analysis}
+Validation accuracy reached about 88\% for 32 and 64 neurons and 89.7\% for 128 neurons (macro F1 \textasciitilde 0.76). While the 64-neuron model minimized validation loss, the 128-neuron model yielded the most balanced class performance, correctly identifying minority attacks such as \textit{Brute Force}. Increased neuron count improved representational capacity and class separation.
 
-\subsection{Activation Function Study}
+\subsection{Activation Function Study and Generalization}
+Replacing the linear activation function with ReLU (64 neurons) accelerated convergence and enhanced minority-class recognition (Brute Force F1 = 0.85), as shown in Figure~\ref{fig:relu_64}. Validation and test metrics remained closely aligned, confirming strong generalization. The 64-neuron ReLU network was selected as the reference configuration for subsequent tasks.
 
-\subsection{Generalization Assessment}
-
-   
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{images/task2/loss_curves_model_relu_64.png}
+    \caption{Loss curves of the 64-neuron model using ReLU activation.}
+    \label{fig:relu_64}
+\end{figure}

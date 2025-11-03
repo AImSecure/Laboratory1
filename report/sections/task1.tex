@@ -2,81 +2,51 @@
 \label{sec:data-analysis-preprocessing}
 
 \subsection{Raw Dataset Profile}
-
-The initial dataset corresponds to a subset of the CICIDS2017 network traffic traces, selected to study binary intrusion detection using a Feed-Forward Neural Network (FFNN). 
-It contains multiple network flow features capturing statistical, temporal, and content-based characteristics of connections. 
-Before preprocessing, the dataset comprised both numerical and categorical attributes, together with a target variable identifying normal and attack traffic. 
-
-A first inspection of the class distribution revealed a strong imbalance between benign and malicious samples, which could potentially bias the learning process. 
-The frequency of each class is shown in Figure~\ref{fig:class_distribution}. The dominance of the benign class justified later balancing strategies and careful partitioning to maintain a representative sample across subsets.
+The dataset, derived from CICIDS2017, contains labeled network flows with statistical, temporal, and content-based features. It initially included \textbf{31,507 samples}, combining benign and attack traffic. The class distribution (Figure~\ref{fig:class_distribution}) shows a strong imbalance, with benign samples dominating.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\linewidth]{\imagespath class_distribution.png}
-    \caption{Distribution of classes in the raw dataset showing the imbalance between benign and attack samples.}
+    \includegraphics[width=0.75\linewidth]{images/task1/class_distribution.png}
+    \caption{Class distribution in the raw dataset.}
     \label{fig:class_distribution}
 \end{figure}
 
-To better understand the dataset characteristics, several numerical features were explored to assess scale variability, skewness, and the presence of extreme values. 
-Representative examples of the raw feature distributions are illustrated in Figures~\ref{fig:raw_distributions_1} and~\ref{fig:raw_distributions_2}. 
-Most features exhibit heavy-tailed distributions and large dynamic ranges, confirming the need for normalization before model training.
+Exploration of numerical attributes revealed high variability and heavy-tailed distributions (Figures~\ref{fig:raw_distributions_1}), indicating the presence of outliers and the need for normalization.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\linewidth]{\imagespath raw_distributions_1.png}
-    \caption{Example distributions of selected raw numerical features. Many variables show high variance and skewness.}
+    \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_1.png}
+    \caption{Examples of feature (Bwd Packet Length Max) kernel density plot and boxplot, highlighting outliers.}
     \label{fig:raw_distributions_1}
 \end{figure}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=\linewidth]{\imagespath raw_distributions_2.png}
-    \caption{Additional examples of feature distributions before preprocessing, highlighting differences in scales and the presence of outliers.}
-    \label{fig:raw_distributions_2}
-\end{figure}
+\subsection{Data Cleaning and Partitioning}
+After removing missing, duplicate, and infinite entries, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values).
 
-\subsection{Data Cleaning Strategy}
-
-The cleaning phase involved identifying and handling inconsistent or missing data, as well as removing irrelevant attributes. 
-Non-numerical fields such as timestamps or identifiers were excluded, since they did not contribute to model learning and could introduce noise. 
-Missing values were inspected; their occurrence was minimal and resolved by removing incomplete rows rather than applying imputation, preserving data consistency. 
-Duplicated entries were also dropped to ensure that each sample represented a unique network flow instance.
-
-During this stage, the data types were unified and all categorical features were encoded numerically to enable direct input to the FFNN. 
-After cleaning, the dataset maintained the same number of relevant features across all samples, ensuring compatibility with the normalization and partitioning steps.
-
-\subsection{Data Partitioning}
-
-The cleaned dataset was randomly partitioned into three subsets: 60\% for training, 20\% for validation, and 20\% for testing. 
-A fixed random seed was used to ensure reproducibility. 
-The stratified sampling approach was applied to preserve the class ratio across all splits, reducing the impact of the imbalance on model evaluation. 
-The validation set was used for hyperparameter tuning and early-stopping monitoring, while the test set remained unseen until the final model assessment.
-
-This strategy guarantees a balanced evaluation framework, preventing data leakage and ensuring that the model generalizes to unseen samples.
+\noindent The cleaned data were divided into training (60\%), validation (20\%), and test (20\%) subsets using stratified sampling with a fixed seed, ensuring consistent class proportions and reproducibility.
 
 \subsection{Outlier Detection and Normalization}
+Outliers were analyzed through the \textit{Z-score} and \textit{IQR} methods. Both confirmed extreme values in features such as \textit{Bwd Packet Length Max}, \textit{Flow Duration}, and \textit{Fwd IAT Std}. Outliers were retained to preserve data realism, and normalization was applied to reduce their effect.
 
-Outliers were investigated through boxplots and distribution analysis, identifying samples with exceptionally high or low feature values. 
-While a small number of extreme points were present, they were retained to maintain the realism of the network traffic. 
-Instead of removing them, normalization was employed to mitigate their influence on model training.
+Two scaling methods were tested: \textit{StandardScaler} and \textit{RobustScaler}. The latter, based on median and IQR, produced tighter and less skewed distributions, while StandardScaler—though sensitive to outliers—yielded smoother training dynamics. Hence, \textbf{StandardScaler} was chosen for the final preprocessing stage.
 
-Two normalization techniques were compared: Min-Max scaling and Z-score standardization. 
-Both approaches were evaluated to determine which produced more stable distributions and training behavior. 
-Figures~\ref{fig:raw_distributions_comparison_1} and~\ref{fig:raw_distributions_comparison_2} illustrate the effect of normalization on representative features. 
-The transformation successfully compressed the range of values and homogenized the feature scales, reducing the impact of extreme values and improving convergence stability.
-
-\begin{figure}[h!]
+\begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.5\linewidth]{\imagespath raw_distributions_comparison_1.png}
-    \caption{Comparison between raw and normalized distributions for a subset of features. Normalization reduces scale disparities.}
-    \label{fig:raw_distributions_comparison_1}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task1/raw_distributions_comparison_1.png}
+        \caption{Bwd Packet Length Max.}
+        \label{fig:raw_distributions_comparison_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task1/raw_distributions_comparison_2.png}
+        \caption{Fwd IAT Std.}
+        \label{fig:raw_distributions_comparison_2}
+    \end{subfigure}
+    \caption{Comparison of normalization effects using StandardScaler and RobustScaler.}
+    \label{fig:comparison_normalization}
 \end{figure}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\linewidth]{\imagespath raw_distributions_comparison_2.png}
-    \caption{Further comparison after normalization showing more compact and uniform feature ranges.}
-    \label{fig:raw_distributions_comparison_2}
-\end{figure}
-
-Overall, the preprocessing pipeline ensured that the data were consistent, representative, and properly scaled for efficient training of the Feed-Forward Neural Network.
+\noindent This preprocessing ensured consistent, balanced, and properly scaled data, forming a robust foundation for training the Feed-Forward Neural Network.

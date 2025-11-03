@@ -1,14 +1,63 @@
-% task6.tex
+\section{OVERFITTING AND REGULARIZATION}
+\label{sec:overfitting-regularization}
 
-% Section Title
-\section{OVERFITTING AND REGULARIZATION} \label{sec:overfitting-regularization}
+\subsection{Baseline Model}
+The baseline deep model (\textit{AdamW}, no explicit regularization) shows consistent convergence with both training and validation losses stabilizing between 0.09-0.11 (Figure~\ref{fig:baseline_loss}). 
+The validation loss remains slightly higher than the training loss, as expected, indicating good generalization and no signs of overfitting. 
+Both curves plateau together, confirming stable learning with high validation accuracy ($\sim$96\%).
 
-\subsection{Baseline Overfitting Assessment}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.65\linewidth]{images/task6/Baseline_loss_curve.png}
+    \caption{Training and validation loss curves for the baseline model (AdamW).}
+    \label{fig:baseline_loss}
+\end{figure}
 
-\subsection{Dropout Experiments}
+\subsection{Effect of Normalization and Regularization}
+Several regularization strategies were applied to investigate their impact on convergence and performance:
+\begin{itemize}
+    \item \textbf{Dropout (0.5)}: Increased generalization pressure but led to underfitting. The validation loss dropped below the training loss, and minority classes were ignored during prediction.
+    \item \textbf{Batch Normalization}: Produced unstable validation loss and irregular convergence, revealing sensitivity to batch statistics in tabular data.
+    \item \textbf{BatchNorm + Dropout (0.5)}: Excessive regularization; validation loss flattened prematurely, causing underfitting and low recall on minority classes.
+    \item \textbf{Weight Decay (1e-4)}: Improved stability and slightly enhanced generalization, maintaining accuracy close to the baseline while preventing minor overfitting trends.
+    \item \textbf{Weight Decay + BN + Dropout (0.5)}: Over-regularized; convergence slower and validation performance degraded.
+\end{itemize}
+Representative examples of the most relevant configurations are reported in Figures~\ref{fig:dropout}-\ref{fig:weightdecay_bn_dropout}.
 
-\subsection{Batch Normalization Effects}
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task6/Dropout_0.5_loss_curve.png}
+        \caption{Dropout (0.5).}
+        \label{fig:dropout}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task6/WeightDecay_1e-4_loss_curve.png}
+        \caption{Weight Decay (1e-4).}
+        \label{fig:weightdecay}
+    \end{subfigure}
+    \vspace{4pt}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task6/BatchNorm_Dropout_0.5_loss_curve.png}
+        \caption{BatchNorm + Dropout (0.5).}
+        \label{fig:batchnorm_dropout}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/task6/WeightDecay_1e-4_BN_Dropout_0.5_loss_curve.png}
+        \caption{Weight Decay + BN + Dropout (0.5).}
+        \label{fig:weightdecay_bn_dropout}
+    \end{subfigure}
+    \caption{Loss evolution across selected regularization strategies.}
+    \label{fig:reg_comparison}
+\end{figure}
 
-\subsection{Weight Decay Tuning}
-
-    
+\subsection{Final Observations}
+Among all tested setups, the \textbf{AdamW optimizer with mild weight decay ($1\times10^{-4}$)} achieved the best balance between stability and performance, reaching 96.3\% validation and test accuracy. 
+Stronger regularization methods such as Dropout or BatchNorm caused underfitting and reduced recall on minority classes, confirming that excessive normalization can harm tabular network training. 
+Hence, light weight decay was identified as the most effective regularization approach for this task.

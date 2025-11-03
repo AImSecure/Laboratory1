@@ -1,10 +1,22 @@
-% conclusion.tex
+\section{CONCLUSIONS}
+\label{sec:conclusions}
 
-% Section Title
-\section{CONCLUSIONS} \label{sec:conclusions}
+This laboratory work systematically explored the design and optimization of Feed-Forward Neural Networks (FFNNs) for network intrusion detection using the CICIDS2017 dataset. 
+Starting from data preprocessing, each task progressively refined the model architecture, training strategies, and evaluation procedures to ensure robustness and generalization.
 
-\subsection{Summary of Findings}
+\noindent The initial data analysis revealed strong class imbalance and feature biases, particularly in the \textit{Destination Port} attribute, which introduced spurious correlations in model learning. 
+After thorough cleaning, normalization, and bias mitigation, the dataset became suitable for supervised training.
 
-\subsection{Future Work}
+\noindent The shallow network experiments demonstrated that increasing the number of neurons improved representational capacity, with the 64-neuron model using ReLU activation achieving the best balance between convergence speed and performance. 
+Subsequent analyses confirmed that this model generalized well to unseen data. 
+Removing the biased \textit{Destination Port} feature exposed the model's dependency on non-generalizable patterns, validating the need for careful feature selection.
 
-    
+\noindent The introduction of a class-weighted loss improved fairness by enhancing recall for minority classes at the expense of slight accuracy reduction. 
+Deep architectures further improved macro F1-score and accuracy, with the three-layer [32, 16, 8] configuration and AdamW optimizer providing the best trade-off between complexity, efficiency, and generalization. 
+Among the tested optimizers, AdamW exhibited the fastest and most stable convergence, while smaller batch sizes yielded better generalization. 
+
+\noindent Finally, experiments on overfitting and regularization confirmed that the baseline model trained with AdamW and mild weight decay (\(1 \times 10^{-4}\)) achieved the best overall performance. 
+Aggressive techniques such as Dropout or Batch Normalization led to underfitting, indicating that excessive regularization is not optimal for tabular intrusion detection data.
+
+\noindent Overall, this study highlights the importance of balanced preprocessing, careful hyperparameter tuning, and moderate regularization in designing neural networks for intrusion detection. 
+The developed FFNN pipeline achieved stable convergence, high accuracy, and good generalization while maintaining interpretability and computational efficiency, providing a solid foundation for future extensions such as convolutional or recurrent models for sequence-based traffic analysis.
