@@ -3,62 +3,66 @@
 % Section Title
 \section{TASK 5 --- DEEP FF NEURAL NETWORK (ARCHITECTURAL AND OPTIMIZER COMPARISON)} \label{sec:deep-nn}
 
-\subsection{Model Architectures and Convergence}
-Deeper Feed-Forward Neural Networks (FFNNs) were trained to assess the influence of network depth, width, batch size, and optimizer on convergence and generalization. 
-All architectures used ReLU activations, AdamW or SGD-based optimizers, and were trained for 50 epochs. 
-Across all configurations, both training and validation losses showed smooth and consistent convergence without divergence, confirming stable optimization.
+    \subsection{Model Architectures and Convergence}
 
-\subsection{Architecture Selection}
-Among the evaluated models, the three-layer network with widths [32, 16, 8] achieved the best validation performance (accuracy = 95.55\%, macro F1 = 0.80). 
-Deeper configurations achieved slightly higher accuracy but exhibited poorer macro F1, showing weaker handling of minority classes. 
-Hence, the [32, 16, 8] model was selected for further experiments as it offered the best trade-off between complexity and generalization.
+        Deeper Feed-Forward Neural Networks (FFNNs) were trained to assess the influence of network depth, width, batch size, and optimizer on convergence and generalization. 
+        All architectures used ReLU activations, AdamW or SGD-based optimizers, and were trained for 50 epochs. 
+        Across all configurations, both training and validation losses showed smooth and consistent convergence without divergence, confirming stable optimization.
 
-\subsection{Test Performance}
-The selected deep model achieved high test performance: accuracy = 0.953, weighted F1 = 0.952, and macro F1 = 0.828. 
-The model generalized well to unseen data, maintaining strong accuracy across all major classes, although \textit{PortScan} remained the most challenging (F1 = 0.50).
+    \subsection{Architecture Selection}
 
-\subsection{Batch Size Effects}
-Batch sizes of 4, 64, 256, and 1024 were compared. 
-Smaller batches (4-64) achieved higher validation accuracy (compared to larger batches) (up to 94.9\%) and macro F1 (\textasciitilde 0.69), while larger batches led to underfitting (accuracy \textasciitilde 89.7\%). 
-This occurs because smaller batches introduce stochasticity in gradient updates, enhancing generalization. 
-Considering both stability and efficiency, a batch size of 64 was adopted for subsequent runs.
+        Among the evaluated models, the three-layer network with widths [32, 16, 8] achieved the best validation performance (accuracy = 95.55\%, macro F1 = 0.80). 
+        Deeper configurations achieved slightly higher accuracy but exhibited poorer macro F1, showing weaker handling of minority classes. 
+        Hence, the [32, 16, 8] model was selected for further experiments as it offered the best trade-off between complexity and generalization.
 
+    \subsection{Test Performance}
+
+        The selected deep model achieved high test performance: accuracy = 0.953, weighted F1 = 0.952, and macro F1 = 0.828. 
+        The model generalized well to unseen data, maintaining strong accuracy across all major classes, although \textit{PortScan} remained the most challenging (F1 = 0.50).
+
+    \subsection{Batch Size Effects}
+    
+        Batch sizes of 4, 64, 256, and 1024 were compared. 
+        Smaller batches (4-64) achieved higher validation accuracy (compared to larger batches) (up to 94.9\%) and macro F1 (\textasciitilde 0.69), while larger batches led to underfitting (accuracy \textasciitilde 89.7\%). 
+        This occurs because smaller batches introduce stochasticity in gradient updates, enhancing generalization. 
+        Considering both stability and efficiency, a batch size of 64 was adopted for subsequent runs.
+       
+        \begin{figure}[h]
+            \centering
+            \begin{subfigure}[b]{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{images/task5/deep_L3_widths_32_16_8_loss_curve.png}
+                \caption{Train and val loss of the best deep model.}
+                \label{fig:deep_L3}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{images/task5/64_loss_curve.png}
+                \caption{Loss evolution for the 64 batch-size configuration.}
+                \label{fig:batch_64}
+            \end{subfigure}
+            \label{fig:loss_curves}
+        \end{figure}
+
+    \subsection{Optimizer Comparison}
+
+        Different optimizers were evaluated: SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. 
+        All converged, but AdamW displayed the fastest and most stable loss decrease, reaching the lowest validation loss. 
+        SGD without momentum converged slowly, while momentum improved convergence speed progressively. 
+        In terms of training time, plain SGD was fastest due to fewer computations, while AdamW was slower but achieved superior accuracy and F1 performance.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.65\linewidth]{images/task5/AdamW_loss_curve.png}
+            \caption{Loss curve of the AdamW optimizer, showing faster and smoother convergence.}
+            \label{fig:adamw_loss}
+        \end{figure}
+
+    \subsection{Learning Rate and Final Evaluation}
+
+        With AdamW and the [32, 16, 8] architecture, fine-tuning the learning rate confirmed stable convergence and robust test results. 
+        The final test classification report showed accuracy = 93.3\% and weighted F1 = 0.93, with particularly strong detection of \textit{Benign} and \textit{Brute Force} traffic. 
+        These results validate the chosen optimizer and architecture as the most effective configuration for balanced performance and generalization.
         
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.48\linewidth}
-        \centering
-        \includegraphics[width=0.9\linewidth]{images/task5/deep_L3_widths_32_16_8_loss_curve.png}
-        \caption{Train and val loss of the best deep model.}
-        \label{fig:deep_L3}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\linewidth}
-        \centering
-        \includegraphics[width=0.9\linewidth]{images/task5/64_loss_curve.png}
-        \caption{Loss evolution for the 64 batch-size configuration.}
-        \label{fig:batch_64}
-    \end{subfigure}
-    \label{fig:}
-\end{figure}
-
-
-\subsection{Optimizer Comparison}
-Different optimizers were evaluated: SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. 
-All converged, but AdamW displayed the fastest and most stable loss decrease, reaching the lowest validation loss. 
-SGD without momentum converged slowly, while momentum improved convergence speed progressively. 
-In terms of training time, plain SGD was fastest due to fewer computations, while AdamW was slower but achieved superior accuracy and F1 performance.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.65\linewidth]{images/task5/AdamW_loss_curve.png}
-    \caption{Loss curve of the AdamW optimizer, showing faster and smoother convergence.}
-    \label{fig:adamw_loss}
-\end{figure}
-
-\subsection{Learning Rate and Final Evaluation}
-With AdamW and the [32, 16, 8] architecture, fine-tuning the learning rate confirmed stable convergence and robust test results. 
-The final test classification report showed accuracy = 93.3\% and weighted F1 = 0.93, with particularly strong detection of \textit{Benign} and \textit{Brute Force} traffic. 
-These results validate the chosen optimizer and architecture as the most effective configuration for balanced performance and generalization.
-
-\noindent Overall, this task highlights the trade-offs among network depth, batch size, and optimizer design, emphasizing that moderate depth and adaptive optimization yield the best balance between performance and efficiency.
+        \noindent Overall, this task highlights the trade-offs among network depth, batch size, and optimizer design, emphasizing that moderate depth and adaptive optimization yield the best balance between performance and efficiency.

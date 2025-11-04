@@ -3,31 +3,36 @@
 % Section Title
 \section{TASK 3 --- IMPACT OF SPECIFIC FEATURES (DESTINATION PORT)} \label{sec:impact-dest-port}
 
-\subsection{Dataset Bias and Feature Dependence}
-During the dataset inspection, it was observed that most of the \textit{Brute Force} attacks shared the same \textit{Destination Port} value (port 80). 
-This is an unrealistic scenario, as Brute Force attacks can occur on any service requiring authentication. 
-This systematic bias introduces a wrong inductive pattern, leading the model to associate port 80 exclusively with Brute Force traffic instead of learning meaningful behavioral features. 
-As a result, the model risks overfitting to an artifact of data collection rather than generalizing to real-world cases.
+    \subsection{Dataset Bias and Feature Dependence}
 
-\subsection{Evaluating Bias via Port Substitution}
-To quantify this effect, the trained 64-neuron ReLU model was evaluated on a modified test set in which all Brute Force samples had their destination port changed from 80 to 8080. 
-While the model performed well on the original validation set (Brute Force: F1 = 0.85, overall accuracy \textasciitilde 94\%), its performance degraded sharply on the modified test set (Brute Force: F1 = 0.08, overall accuracy \textasciitilde 90.4\%). 
-This dramatic decline confirms that the model learned a spurious dependency on the port feature, failing to recognize attacks when this shortcut was removed.
+        During the dataset inspection, it was observed that most of the \textit{Brute Force} attacks shared the same \textit{Destination Port} value (port 80). 
+        This is an unrealistic scenario, as Brute Force attacks can occur on any service requiring authentication. 
+        This systematic bias introduces a wrong inductive pattern, leading the model to associate port 80 exclusively with Brute Force traffic instead of learning meaningful behavioral features. 
+        As a result, the model risks overfitting to an artifact of data collection rather than generalizing to real-world cases.
 
-\subsection{Effect of Removing the Destination Port Feature}
-To mitigate this bias, the destination port attribute was excluded, and the dataset was reprocessed. 
-After duplicate and NaN removal, the number of \textit{PortScan} samples decreased drastically from 5,000 to only 285, as shown in Figure~\ref{fig:class_distribution_no_port}. 
-This reduction indicates that many PortScan flows were nearly identical except for their port values; removing the feature exposed these redundancies.
+    \subsection{Evaluating Bias via Port Substitution}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.55\linewidth]{images/task3/class_distribution_no_port.png}
-    \caption{Updated class distribution after removing the destination port feature.}
-    \label{fig:class_distribution_no_port}
-\end{figure}
+        To quantify this effect, the trained 64-neuron ReLU model was evaluated on a modified test set in which all Brute Force samples had their destination port changed from 80 to 8080. 
+        While the model performed well on the original validation set (Brute Force: F1 = 0.85, overall accuracy \textasciitilde 94\%), its performance degraded sharply on the modified test set (Brute Force: F1 = 0.08, overall accuracy \textasciitilde 90.4\%). 
+        This dramatic decline confirms that the model learned a spurious dependency on the port feature, failing to recognize attacks when this shortcut was removed.
 
-\subsection{Class Balance Considerations}
-Even after preprocessing, the dataset remains imbalanced, with benign samples far exceeding attack ones and minority classes (Brute Force, PortScan) underrepresented. 
-Although dropping the destination port feature improves robustness against spurious correlations, addressing class imbalance remains necessary to prevent the model from favoring majority classes. 
+    \subsection{Effect of Removing the Destination Port Feature}
 
-\noindent In summary, this task highlights how biased or overly discriminative features can mislead model learning. Removing such features or introducing data diversity is essential for ensuring fair and generalizable intrusion detection performance.
+        To mitigate this bias, the destination port attribute was excluded, and the dataset was reprocessed. 
+        After duplicate and NaN removal, the number of \textit{PortScan} samples decreased drastically from 5,000 to only 285, as shown in Figure~\ref{fig:class_distribution_no_port}. 
+        This reduction indicates that many PortScan flows were nearly identical except for their port values; removing the feature exposed these redundancies.
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.55\linewidth]{images/task3/class_distribution_no_port.png}
+            \caption{Updated class distribution after removing the destination port feature.}
+            \label{fig:class_distribution_no_port}
+        \end{figure}
+
+    \subsection{Class Balance Considerations}
+
+        Even after preprocessing, the dataset remains imbalanced, with benign samples far exceeding attack ones and minority classes (Brute Force, PortScan) underrepresented. 
+        Although dropping the destination port feature improves robustness against spurious correlations, addressing class imbalance remains necessary to prevent the model from favoring majority classes. 
+
+        \noindent In summary, this task highlights how biased or overly discriminative features can mislead model learning. 
+        Removing such features or introducing data diversity is essential for ensuring fair and generalizable intrusion detection performance.

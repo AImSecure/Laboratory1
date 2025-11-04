@@ -3,33 +3,36 @@
 % Section Title
 \section{TASK 4 --- THE IMPACT OF THE LOSS FUNCTION (CLASS WEIGHTED)} \label{sec:impact-loss-function}
 
-\subsection{Removing the Destination Port Feature}
-The best-performing model from previous tasks (64 neurons, ReLU activation) was retrained after excluding the \textit{Destination Port} feature to eliminate the bias discussed earlier. 
-This modification had a mixed effect: overall accuracy remained stable, and performance on the \textit{Brute Force} class slightly improved, confirming that the model no longer relied on a biased feature. 
-However, the ability to recognize the rarest class, \textit{PortScan}, declined significantly (F1-score dropped from 0.92 to 0.30), suggesting that the model had previously exploited this feature as a strong shortcut for PortScan detection.
+    \subsection{Removing the Destination Port Feature}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.65\linewidth]{images/task4/loss_curves_model_relu_64_no_port.png}
-    \caption{Training and validation loss curves for the 64-neuron ReLU model without the Destination Port feature.}
-    \label{fig:loss_no_port}
-\end{figure}
+        The best-performing model from previous tasks (64 neurons, ReLU activation) was retrained after excluding the \textit{Destination Port} feature to eliminate the bias discussed earlier. 
+        This modification had a mixed effect: overall accuracy remained stable, and performance on the \textit{Brute Force} class slightly improved, confirming that the model no longer relied on a biased feature. 
+        However, the ability to recognize the rarest class, \textit{PortScan}, declined significantly (F1-score dropped from 0.92 to 0.30), suggesting that the model had previously exploited this feature as a strong shortcut for \textit{PortScan} detection.
 
-\subsection{Class Weights and Weighted Loss}
-To counter the imbalance identified in previous tasks, class weights were computed from the \textit{training set} to avoid data leakage. 
-Weighted cross-entropy was then adopted to penalize misclassifications of minority classes more strongly, encouraging the model to learn balanced decision boundaries.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{images/task4/loss_curves_model_relu_64_no_port.png}
+            \caption{Training and validation loss curves for the 64-neuron ReLU model without the Destination Port feature.}
+            \label{fig:loss_no_port}
+        \end{figure}
 
-\subsection{Effect of Weighted Cross-Entropy}
-Training with the weighted loss produced smoother convergence and more balanced class performance (Figure~\ref{fig:loss_weighted}). 
-Although overall accuracy and weighted F1 slightly decreased, the \textit{macro} F1-score and recall for minority classes improved markedly. 
-This confirms that the weighted cross-entropy promotes fairness across classes, making the model less biased toward dominant traffic types.
+    \subsection{Class Weights and Weighted Loss}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.65\linewidth]{images/task4/loss_curves_model_relu_64_no_port_weighted.png}
-    \caption{Training and validation loss curves for the 64-neuron model using weighted cross-entropy.}
-    \label{fig:loss_weighted}
-\end{figure}
+        To counter the imbalance identified in previous tasks, class weights were computed from the \textit{training set} to avoid data leakage. 
+        Weighted cross-entropy was then adopted to penalize misclassifications of minority classes more strongly, encouraging the model to learn balanced decision boundaries.
 
-\noindent In summary, applying a class-weighted loss enhanced the detection of underrepresented attacks such as \textit{PortScan} and \textit{Brute Force}, at a minor cost in overall accuracy. 
-This experiment highlights the trade-off between global accuracy and per-class metrics, emphasizing the importance of tailored loss design in imbalanced network intrusion datasets.
+    \subsection{Effect of Weighted Cross-Entropy}
+    
+        Training with the weighted loss produced smoother convergence and more balanced class performance (Figure~\ref{fig:loss_weighted}). 
+        Although overall accuracy and weighted F1 slightly decreased, the \textit{macro} F1-score and recall for minority classes improved markedly. 
+        This confirms that the weighted cross-entropy promotes fairness across classes, making the model less biased toward dominant traffic types.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{images/task4/loss_curves_model_relu_64_no_port_weighted.png}
+            \caption{Training and validation loss curves for the 64-neuron model using weighted cross-entropy.}
+            \label{fig:loss_weighted}
+        \end{figure}
+
+        \noindent In summary, applying a class-weighted loss enhanced the detection of underrepresented attacks such as \textit{PortScan} and \textit{Brute Force}, at a minor cost in overall accuracy. 
+        This experiment highlights the trade-off between global accuracy and per-class metrics, emphasizing the importance of tailored loss design in imbalanced network intrusion datasets.

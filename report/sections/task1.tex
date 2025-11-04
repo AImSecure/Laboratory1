@@ -31,7 +31,7 @@
                 \end{tabular}
                 \vspace{0.3cm}
                 \captionof{table}{Summary of the raw dataset.}
-                \label{tab:raw_dataset_summary}
+                \label{tab:cleaning_steps}
             \end{minipage}
         \end{figure}
 
@@ -40,10 +40,11 @@
 
     \subsection{Data Cleaning and Partitioning}
 
-        After removing missing, duplicate, and infinite entries, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values)(Table \ref{tab:raw_dataset_summary}).
-        Categorical labels were encoded numerically: \textit{Benign} = 0, \textit{Brute Force} = 1, \textit{DoS Hulk} = 2, \textit{PortScan} = 3.
+        Table \ref{tab:cleaning_steps} summarizes the cleaning process: duplicate rows, missing values (NaN), and infinite entries were systematically removed.
+        Thus, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values).
+        Categorical labels were then encoded numerically: \textit{Benign} = 0, \textit{Brute Force} = 1, \textit{DoS Hulk} = 2, \textit{PortScan} = 3.
 
-        The cleaned data were divided into training (60\%), validation (20\%), and test (20\%) subsets using stratified sampling with a fixed seed, ensuring consistent class proportions and reproducibility.
+        The cleaned data were divided into training (60\%, 17,631 samples), validation (20\%, 5,877 samples), and test (20\%, 5,878 samples) subsets using \textbf{stratified sampling} with a fixed seed, ensuring consistent class proportions and reproducibility.
         Exploration of numerical attributes revealed high variability and heavy-tailed distributions (Figures~\ref{fig:raw_distributions_1}), indicating the presence of outliers and the need for normalization.
 
         \vspace{-0.2cm}
@@ -51,18 +52,21 @@
         \begin{figure}[H]
             \centering
             \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_1.png}
+            \vspace{-0.5cm}
             \caption{Examples of feature (Bwd Packet Length Max) kernel density plot and boxplot, highlighting outliers.}
             \label{fig:raw_distributions_1}
         \end{figure}
 
-        \vspace{-0.5cm}
+        \vspace{-0.3cm}
 
     \subsection{Outlier Detection and Normalization}
 
-        Outliers were analyzed through the \textit{Z-score} and \textit{IQR} methods. Both confirmed extreme values in features such as \textit{Bwd Packet Length Max}, \textit{Flow Duration}, and \textit{Fwd IAT Std}. Outliers were retained to preserve data realism, and normalization was applied to reduce their effect.
+        Outliers were analyzed through the \textbf{Z-score} and \textbf{IQR} methods. 
+        Both confirmed extreme values in features such as \textit{Bwd Packet Length Max}, \textit{Flow Duration}, and \textit{Fwd IAT Std}. 
+        Outliers were retained to preserve data realism, and normalization was applied to reduce their effect.
 
-        Two scaling methods were tested: \textit{StandardScaler} and \textit{RobustScaler}.
-        The \textbf{density comparison plots} (Figure \ref{fig:comparison_normalization}) showed that both methods effectively normalized distributions, but \textit{RobustScaler} produced more compact, less skewed curves for highly variable features.
+        Two scaling methods were tested: \textbf{StandardScaler} and \textbf{RobustScaler}.
+        The density comparison plots (Figure \ref{fig:comparison_normalization}) showed that both methods effectively normalized distributions, but RobustScaler produced more compact, less skewed curves for highly variable features.
         However, the numerical statistics and subsequent training experiments revealed negligible performance difference between the two.
         Therefore, \textbf{StandardScaler} was ultimately adopted for simplicity and interpretability, offering smoother loss curves in preliminary trials.
 
@@ -79,6 +83,7 @@
                 \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_comparison_2.png}
                 \label{fig:raw_distributions_comparison_2}
             \end{subfigure}
+            \vspace{-0.2cm}
             \caption{Comparison of normalization effects using StandardScaler and RobustScaler.}
             \label{fig:comparison_normalization}
         \end{figure}
