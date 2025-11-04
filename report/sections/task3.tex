@@ -13,7 +13,7 @@
     \subsection{Evaluating Bias via Port Substitution}
 
         To quantify this effect, the trained 64-neuron ReLU model was evaluated on a \textbf{modified test set} in which all Brute Force samples had their destination port changed from 80 to 8080. 
-        While the model performed well on the original validation set (Brute Force: F1 = 0.85, overall accuracy \textasciitilde 94\%), its performance degraded sharply on the modified test set (Brute Force: F1 = 0.08, overall accuracy \textasciitilde 90.4\%). 
+        While the model performed well on the original validation set (Brute Force: F1 \textasciitilde 0.85, overall accuracy \textasciitilde 95\%), its performance degraded sharply on the modified test set (Brute Force: F1 \textasciitilde 0.08, overall accuracy \textasciitilde 90\%). 
         This dramatic decline confirms that the model learned a spurious dependency on the port feature, failing to recognize attacks when this shortcut was removed.
 
     \subsection{Effect of Removing the Destination Port Feature}
@@ -37,15 +37,15 @@
                     \toprule
                     \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
                     \midrule
-                    \textbf{0} \textit{Benign}      & 0.9023 & 0.9696 & 0.9348 \\
-                    \textbf{1} \textit{Brute Force} & 0.1705 & 0.0526 & 0.0804 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9944 & 0.9160 & 0.9536 \\
-                    \textbf{3} \textit{Port Scan}   & 0.9384 & 0.9103 & 0.9241 \\
+                    \textbf{0} \textit{Benign}      & 0.9025 & 0.9647 & 0.9326 \\
+                    \textbf{1} \textit{Brute Force} & 0.1667 & 0.0526 & 0.0800 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9944 & 0.9096 & 0.9501 \\
+                    \textbf{3} \textit{Port Scan}   & 0.9224 & 0.9186 & 0.9205 \\
                     \midrule
                 \end{tabular}
                 \begin{tabular}{c c c}
                     \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
-                    0.9544 & 0.9279 & 0.9548 \\
+                    0.9056 & 0.7208 & 0.8915 \\
                 \end{tabular}
                 \vspace{0.3cm}
                 \caption{Test set report - port changed before scaling.}
