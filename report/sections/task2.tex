@@ -6,8 +6,8 @@ A single-layer Feed-Forward Neural Network (FFNN) was trained with 32, 64, and 1
 
 \subsection{Training Dynamics}
 The training and validation loss curves (Figures~\ref{fig:loss_32}--\ref{fig:loss_128}) show consistent convergence for all models, with rapid loss reduction during early epochs followed by stable plateaus. No overfitting was observed. The 64-neuron network achieved the lowest validation loss (\textasciitilde 0.289), while the 128-neuron model reached a similar value before early stopping at epoch 78.
-
-\begin{figure}[H]
+\vspace{-4pt}
+\begin{figure}[h]
     \centering
     \begin{subfigure}[b]{0.32\linewidth}
         \centering
@@ -30,7 +30,7 @@ The training and validation loss curves (Figures~\ref{fig:loss_32}--\ref{fig:los
     \caption{Training and validation losses for single-layer FFNNs.}
     \label{fig:loss_comparison}
 \end{figure}
-
+\vspace{-4pt}
 \subsection{Validation Performance Analysis}
 Validation accuracy reached about 88\% for 32 and 64 neurons and 89.7\% for 128 neurons (macro F1 \textasciitilde 0.76). While the 64-neuron model minimized validation loss, the 128-neuron model yielded the most balanced class performance, correctly identifying minority attacks such as \textit{Brute Force}. Increased neuron count improved representational capacity and class separation.
 
@@ -39,7 +39,7 @@ Replacing the linear activation function with ReLU (64 neurons) accelerated conv
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\linewidth]{images/task2/loss_curves_model_relu_64.png}
+    \includegraphics[width=0.5\linewidth]{images/task2/loss_curves_model_relu_64.png}
     \caption{Loss curves of the 64-neuron model using ReLU activation.}
     \label{fig:relu_64}
 \end{figure}

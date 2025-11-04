@@ -1,8 +1,8 @@
 % abstract.tex
 
 \begin{abstract}
-This report documents the development of a supervised intrusion-detection pipeline for the CICIDS2017 dataset using feed-forward neural networks. We first align the data with standard machine-learning practice by removing corrupted or duplicated flows, stratifying train/validation/test splits, and applying feature scaling tailored to the observed outlier distribution. Building on this foundation, we benchmark single-hidden-layer models, study the inductive bias introduced by the destination port feature, and progressively extend the architecture depth while varying batch size, optimizer, and loss formulations.
-
-\noindent Our experiments show that ReLU-activated shallow models already capture most benign and frequent attack patterns, while class-weighted cross-entropy substantially improves the recall of rare ports and brute-force events. Deeper configurations offer additional gains in macro-averaged performance and training stability, provided that mini-batch sizing and optimization hyperparameters are co-tuned. Finally, regularization strategies based on dropout, batch normalization, and weight decay mitigate overfitting when the network capacity increases, yielding models that remain robust once high-leverage features are neutralised. These results highlight the importance of carefully balancing architecture complexity and regularization to deploy resilient FFNN-based intrusion detectors.
-    
+This work presents the development of \textbf{Feed-Forward Neural Networks (FFNNs)} for \textbf{intrusion detection} using the \textbf{CICIDS2017} dataset.  
+Through six progressive tasks, we address data cleaning, feature bias, class imbalance, architectural design, and overfitting control.  
+The final model—a three-layer FFNN (128-64-32) with ReLU activation, AdamW optimization, and Batch Normalization—achieved \textbf{96\% accuracy} and \textbf{0.94 macro-F1}.  
+Results highlight that bias mitigation, weighted loss optimization, and regularization are essential for reliable, generalizable \textbf{AI-based IDS} capable of detecting diverse network attacks in real-world cybersecurity contexts.
 \end{abstract}

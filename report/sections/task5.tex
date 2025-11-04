@@ -6,13 +6,6 @@ Deeper Feed-Forward Neural Networks (FFNNs) were trained to assess the influence
 All architectures used ReLU activations, AdamW or SGD-based optimizers, and were trained for 50 epochs. 
 Across all configurations, both training and validation losses showed smooth and consistent convergence without divergence, confirming stable optimization.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.65\linewidth]{images/task5/deep_L3_widths_32_16_8_loss_curve.png}
-    \caption{Training and validation loss of the best deep model (3 layers, widths [32, 16, 8]).}
-    \label{fig:deep_L3}
-\end{figure}
-
 \subsection{Architecture Selection}
 Among the evaluated models, the three-layer network with widths [32, 16, 8] achieved the best validation performance (accuracy = 95.55\%, macro F1 = 0.80). 
 Deeper configurations achieved slightly higher accuracy but exhibited poorer macro F1, showing weaker handling of minority classes. 
@@ -28,12 +21,25 @@ Smaller batches (4-64) achieved higher validation accuracy (compared to larger b
 This occurs because smaller batches introduce stochasticity in gradient updates, enhancing generalization. 
 Considering both stability and efficiency, a batch size of 64 was adopted for subsequent runs.
 
+        
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/task5/64_loss_curve.png}
-    \caption{Loss evolution for the 64 batch-size configuration.}
-    \label{fig:batch_64}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{images/task5/deep_L3_widths_32_16_8_loss_curve.png}
+        \caption{Train and val loss of the best deep model.}
+        \label{fig:deep_L3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{images/task5/64_loss_curve.png}
+        \caption{Loss evolution for the 64 batch-size configuration.}
+        \label{fig:batch_64}
+    \end{subfigure}
+    \label{fig:}
 \end{figure}
+
 
 \subsection{Optimizer Comparison}
 Different optimizers were evaluated: SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. 

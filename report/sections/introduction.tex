@@ -3,10 +3,15 @@
 % Section Title
 \section{INTRODUCTION} \label{sec:introduction}
 
-This laboratory focuses on deploying feed-forward neural networks for intrusion detection within the CICIDS2017 benchmark. The assignment emphasises disciplined experiment design: clarify preprocessing assumptions, measure how architectural depth influences classification, and evaluate strategies that mitigate class imbalance. The overall goal is to gain practical insight into how model capacity, hyperparameters, and regularization jointly shape detection performance in cybersecurity settings.
+This laboratory explores the implementation of a \textbf{Feed-Forward Neural Network (FFNN)} using the \textbf{CICIDS2017} dataset, a standard benchmark for intrusion detection research.  
+    The goal is to construct a complete machine learning pipeline in \cooltext{PyTorch}—from raw data preparation to model evaluation—to analyze how architectural choices and preprocessing strategies affect classification performance in cybersecurity contexts.
 
-\noindent The provided dataset captures flows spanning benign traffic and three attack families—PortScan, DoS Hulk, and Brute Force—collected during the CICIDS2017 campaign. From the original feature space, seventeen attributes were retained to balance relevance and tractability: timing statistics, directional packet metrics, and protocol-level indicators such as the destination port and SYN flag counts. The data exhibits moderate imbalance and includes duplicated flows, motivating both careful cleaning and the later analysis on the inductive bias introduced by port-based attributes.
+    \noindent The experiment is divided into six tasks, progressively building complexity:
+    \textbf{data preprocessing}: cleaning, scaling, and outlier management;
+    \textbf{baseline FFNN training}: single hidden layer;
+    \textbf{feature bias analysis}: focus on \textit{Destination Port};
+    \textbf{loss-function weighting}: for class imbalance;
+    \textbf{deep network optimization}: architecture and optimizer variations;
+    \textbf{regularization}: dropout, batch normalization, weight decay.
 
-\noindent This is the outline of the report: Section~\ref{sec:data-analysis-preprocessing} details the preprocessing pipeline and motivates the normalization and split strategy. Section~\ref{sec:shallow-nn} introduces single-layer baselines and examines activation choices, while Section~\ref{sec:impact-dest-port} studies the effect of manipulating and removing the destination port feature. Sections~\ref{sec:impact-loss-function} through~\ref{sec:overfitting-regularization} expand the networks with weighted losses, deeper architectures, optimizer comparisons, and regularization controls. The report closes with Section~\ref{sec:conclusions}, summarising findings and outlining future work.
-
-    
+\noindent The overarching aim is to understand how data characteristics and network configuration influence the model's ability to detect attack types such as \textit{DoS Hulk}, \textit{PortScan}, and \textit{Brute Force}, while maintaining robustness and generalization.
