@@ -1,89 +1,88 @@
-\section{DATA ANALYSIS AND PREPROCESSING}
-\label{sec:data-analysis-preprocessing}
+% task1.tex
 
-\subsection{Dataset Overview}
+% Section Title
+\section{TASK 1 --- DATA ANALYSIS AND PREPROCESSING} \label{sec:data-analysis-preprocessing}
 
-    The raw dataset contained \textbf{31,507 samples} and \textbf{17 features}, including numerical flow statistics and a categorical label identifying traffic types: \textit{Benign}, \textit{DoS Hulk}, \textit{PortScan}, and \textit{Brute Force}.
-    The initial label distribution was strongly skewed, dominated by benign flows ($\approx$ 20,000 samples). A class distribution plot (Figure \ref{fig:class_distribution}) visually confirmed this imbalance, motivating the use of \textbf{stratified splitting} later in the pipeline.
+    \subsection{Dataset Overview}
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{images/task1/class_distribution.png}
-        \caption{Class distribution in the raw dataset.}
-        \label{fig:class_distribution}
-    \end{minipage}\hfill
-    \raisebox{2.5cm}{
-    \begin{minipage}[t]{0.5\textwidth}
-        \centering
-        \begin{tabular}{l l l}
-                \toprule
-                \textbf{Step} & \textbf{Removed} & \textbf{Remaining} \\
-                \midrule
-                Drop NaN             & 20    & 31,487 \\
-                Drop duplicates      & 2,114 & 29,393 \\
-                Drop infinite values & 7     & \textbf{29,386} \\
-                \bottomrule
-        \end{tabular}
-        \captionof{table}{Summary of the raw dataset.}
-        \label{tab:raw_dataset_summary}
-    \end{minipage}}
-\end{figure}
-Before any training, the dataset must be cleaned and normalized to ensure the model learns meaningful statistical relationships rather than artifacts of data noise or imbalance.
-The preprocessing pipeline targets three main issues:
+        The raw dataset contained \textbf{31,507 samples} and \textbf{17 features}, including numerical flow statistics and a categorical label identifying traffic types: \textit{Benign} ($\approx$ 63\% of the samples), \textit{DoS Hulk}, \textit{PortScan}, and \textit{Brute Force}.
+        A class distribution plot (Figure \ref{fig:class_distribution}) visually confirmed this imbalance, motivating the use of \textbf{stratified splitting} later in the pipeline.
 
-\clearpage
+        \begin{figure}[H]
+            \centering
+            \begin{minipage}{0.48\textwidth}
+                \centering
+                \includegraphics[width=\linewidth]{images/task1/class_distribution.png}
+                \vspace{-0.5cm}
+                \caption{Class distribution in the raw dataset.}
+                \label{fig:class_distribution}
+            \end{minipage}
+            \hfill
+            \begin{minipage}{0.48\textwidth}
+                \centering
+                \begin{tabular}{l l l}
+                    \toprule
+                    \textbf{Step} & \textbf{Removed} & \textbf{Remaining} \\
+                    \midrule
+                    Drop NaN             & 20    & 31,487 \\
+                    Drop duplicates      & 2,114 & 29,393 \\
+                    Drop infinite values & 7     & \textbf{29,386} \\
+                    \bottomrule
+                \end{tabular}
+                \vspace{0.3cm}
+                \captionof{table}{Summary of the raw dataset.}
+                \label{tab:raw_dataset_summary}
+            \end{minipage}
+        \end{figure}
 
-    \begin{enumerate}
-        \item \textbf{Data quality}: removing missing, duplicate, and infinite values.
-        \item \textbf{Class imbalance}: preserving proportional representation during splitting.
-        \item \textbf{Feature scaling}: standardizing feature ranges to stabilize neural training.
-    \end{enumerate}
-\subsection{Data Cleaning and Partitioning}
+        Before any training, the dataset must be cleaned and normalized to ensure the model learns meaningful statistical relationships rather than artifacts of data noise or imbalance.
+        The preprocessing pipeline addresses three critical aspects: \textbf{data quality} through the removal of missing, duplicate, and infinite values; \textbf{class imbalance} by preserving proportional representation during splitting; and \textbf{feature scaling} to standardize feature ranges and stabilize neural training convergence.
 
-After removing missing, duplicate, and infinite entries, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values)(Table \ref{tab:raw_dataset_summary}).
-Categorical labels were encoded numerically: \textit{Benign} = 0, \textit{Brute Force} = 1, \textit{DoS Hulk} = 2, \textit{PortScan} = 3.
+    \subsection{Data Cleaning and Partitioning}
 
-The cleaned data were divided into training (60\%), validation (20\%), and test (20\%) subsets using stratified sampling with a fixed seed, ensuring consistent class proportions and reproducibility.
-Exploration of numerical attributes revealed high variability and heavy-tailed distributions (Figures~\ref{fig:raw_distributions_1}), indicating the presence of outliers and the need for normalization.
+        After removing missing, duplicate, and infinite entries, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values)(Table \ref{tab:raw_dataset_summary}).
+        Categorical labels were encoded numerically: \textit{Benign} = 0, \textit{Brute Force} = 1, \textit{DoS Hulk} = 2, \textit{PortScan} = 3.
 
-\vspace{-0.2cm}
+        The cleaned data were divided into training (60\%), validation (20\%), and test (20\%) subsets using stratified sampling with a fixed seed, ensuring consistent class proportions and reproducibility.
+        Exploration of numerical attributes revealed high variability and heavy-tailed distributions (Figures~\ref{fig:raw_distributions_1}), indicating the presence of outliers and the need for normalization.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_1.png}
-    \caption{Examples of feature (Bwd Packet Length Max) kernel density plot and boxplot, highlighting outliers.}
-    \label{fig:raw_distributions_1}
-\end{figure}
+        \vspace{-0.2cm}
 
-\vspace{-0.5cm}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_1.png}
+            \caption{Examples of feature (Bwd Packet Length Max) kernel density plot and boxplot, highlighting outliers.}
+            \label{fig:raw_distributions_1}
+        \end{figure}
 
-\subsection{Outlier Detection and Normalization}
-Outliers were analyzed through the \textit{Z-score} and \textit{IQR} methods. Both confirmed extreme values in features such as \textit{Bwd Packet Length Max}, \textit{Flow Duration}, and \textit{Fwd IAT Std}. Outliers were retained to preserve data realism, and normalization was applied to reduce their effect.
+        \vspace{-0.5cm}
 
-Two scaling methods were tested: \textit{StandardScaler} and \textit{RobustScaler}.
-The \textbf{density comparison plots} (Figure \ref{fig:comparison_normalization}) showed that both methods effectively normalized distributions, but \textit{RobustScaler} produced more compact, less skewed curves for highly variable features.
-However, the numerical statistics and subsequent training experiments revealed negligible performance difference between the two.
-Therefore, \textbf{StandardScaler} was ultimately adopted for simplicity and interpretability, offering smoother loss curves in preliminary trials.
+    \subsection{Outlier Detection and Normalization}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\linewidth}
-        \centering
-        \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_comparison_1.png}
-        \label{fig:raw_distributions_comparison_1}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\linewidth}
-        \centering
-        \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_comparison_2.png}
-        \label{fig:raw_distributions_comparison_2}
-    \end{subfigure}
-    \caption{Comparison of normalization effects using StandardScaler and RobustScaler.}
-    \label{fig:comparison_normalization}
-\end{figure}
+        Outliers were analyzed through the \textit{Z-score} and \textit{IQR} methods. Both confirmed extreme values in features such as \textit{Bwd Packet Length Max}, \textit{Flow Duration}, and \textit{Fwd IAT Std}. Outliers were retained to preserve data realism, and normalization was applied to reduce their effect.
 
-\noindent This preprocessing ensured consistent, balanced, and properly scaled data, forming a robust foundation for training the Feed-Forward Neural Network.
+        Two scaling methods were tested: \textit{StandardScaler} and \textit{RobustScaler}.
+        The \textbf{density comparison plots} (Figure \ref{fig:comparison_normalization}) showed that both methods effectively normalized distributions, but \textit{RobustScaler} produced more compact, less skewed curves for highly variable features.
+        However, the numerical statistics and subsequent training experiments revealed negligible performance difference between the two.
+        Therefore, \textbf{StandardScaler} was ultimately adopted for simplicity and interpretability, offering smoother loss curves in preliminary trials.
 
-\clearpage
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}[b]{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_comparison_1.png}
+                \label{fig:raw_distributions_comparison_1}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{images/task1/raw_distributions_comparison_2.png}
+                \label{fig:raw_distributions_comparison_2}
+            \end{subfigure}
+            \caption{Comparison of normalization effects using StandardScaler and RobustScaler.}
+            \label{fig:comparison_normalization}
+        \end{figure}
+
+        \noindent This preprocessing ensured consistent, balanced, and properly scaled data, forming a robust foundation for training the Feed-Forward Neural Network.
+
+\clearpage % Remove if not needed
