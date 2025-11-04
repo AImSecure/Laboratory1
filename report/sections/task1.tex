@@ -41,7 +41,7 @@
     \subsection{Data Cleaning and Partitioning}
 
         Table \ref{tab:cleaning_steps} summarizes the cleaning process: duplicate rows, missing values (NaN), and infinite entries were systematically removed.
-        Thus, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 missing/duplicates and 7 infinite values).
+        Thus, the dataset was reduced to \textbf{29,386 samples}, meaning \textbf{2,121 rows} were discarded (2,114 between missing and duplicates, and 7 infinite values).
         Categorical labels were then encoded numerically: \textit{Benign} = 0, \textit{Brute Force} = 1, \textit{DoS Hulk} = 2, \textit{PortScan} = 3.
 
         The cleaned data were divided into training (60\%, 17,631 samples), validation (20\%, 5,877 samples), and test (20\%, 5,878 samples) subsets using \textbf{stratified sampling} with a fixed seed, ensuring consistent class proportions and reproducibility.
