@@ -13,7 +13,8 @@
     
         The training and validation loss curves (Figures~\ref{fig:loss_32}--\ref{fig:loss_128}) show consistent convergence for all models, with rapid loss reduction during early epochs followed by stable plateaus. 
         No overfitting was observed. 
-        The 32 and 64-neuron networks achieved the lowest validation loss (\textasciitilde 0.295), with the 64-neuron model early stopping just before 100 epochs. However, all the three models demonstrated similar training dynamics.
+        The 32 and 64-neuron networks achieved the lowest validation loss (\textasciitilde 0.295), with the 64-neuron model early stopping just before 100 epochs. 
+        However, all the three models demonstrated similar training dynamics.
         
         \vspace{-0.2cm}
         
@@ -83,7 +84,6 @@
 
         Validation accuracy reached about 88\% for 32 and 128 neurons, 89.4\% for 64 neurons (macro F1 \textasciitilde 0.748). 
         So the 64-neuron model outperformed others in overall metrics (Table~\ref{tab:linear-validation}): considering these results and training dynamics, it was selected for detailed class-wise analysis.
-        
 
     \subsection{Activation Function Study and Generalization}
     
@@ -92,7 +92,6 @@
         The 64-neuron ReLU network was selected as the reference configuration for subsequent tasks.
         As we can see from the validation report (Table~\ref{tab:relu_64-metrics}), the model improved significantly in identifying Brute Force attacks while maintaining high performance on other classes. 
         So the choice of activation function proved crucial in enhancing model capability of capturing complex patterns or less frequent classes in the dataset.
-
 
         \begin{figure}[H]
             \centering
