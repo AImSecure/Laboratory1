@@ -89,7 +89,7 @@
     \subsection{Activation Function Study and Generalization}
     
         Replacing the linear activation with ReLU (64 neurons) accelerated convergence and markedly improved minority-class recognition.  
-        In particular, the Brute Force class (1) F1 rose from 0.28 (linear model; Table~\ref{tab:linear-metrics}) to 0.85 with ReLU (Table~\ref{tab:relu_64-metrics}), showing that ReLU helped capture more complex patterns for this rare attack type.  
+        In particular, the Brute Force class (1) F1 rose from 0.28 (linear model; Table~\ref{tab:linear-metrics}) to 0.77 with ReLU (Table~\ref{tab:relu_64-metrics}), showing that ReLU helped capture more complex patterns for this rare attack type.  
         Figure~\ref{fig:relu_64} illustrates the faster/stabler loss dynamics, and validation/test metrics remained closely aligned, confirming good generalization.  
         Overall the model performs best on Benign, DoS Hulk and Port Scan (F1 = 0.96, 0.95, 0.92 respectively) while now also handling Brute Force effectively, indicating a strong across-the-board improvement.
 

@@ -7,7 +7,7 @@
 
         The best-performing model from previous tasks (64 neurons, ReLU activation) was retrained after excluding the \textit{Destination Port} feature to eliminate the bias discussed earlier. 
         This modification had a mixed effect: overall accuracy remained stable, and performance on the \textit{Brute Force} class slightly improved, confirming that the model no longer relied on a biased feature. 
-        However, the ability to recognize the rarest class, \textit{PortScan}, declined significantly (F1-score dropped from 0.92 to 0.38), suggesting that the model had previously exploited this feature as a strong shortcut for \textit{PortScan} detection.
+        However, the ability to recognize the rarest class, \textit{PortScan}, declined significantly (F1-score dropped from 0.92 to 0.21), suggesting that the model had previously exploited this feature as a strong shortcut for \textit{PortScan} detection.
 
         \begin{figure}[H]
             \centering
@@ -24,15 +24,15 @@
                     \toprule
                     \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
                     \midrule
-                    \textbf{0} \textit{Benign}      & 0.9612 & 0.9748 & 0.9680 \\
-                    \textbf{1} \textit{Brute Force} & 0.8018 & 0.9476 & 0.8686 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9857 & 0.8900 & 0.9354 \\
-                    \textbf{3} \textit{Port Scan}   & 0.5312 & 0.2982 & 0.3820 \\
+                    \textbf{0} \textit{Benign}      & 0.9455 & 0.9751 & 0.9601 \\
+                    \textbf{1} \textit{Brute Force} & 0.7927 & 0.9091 & 0.8469 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9880 & 0.8486 & 0.9130 \\
+                    \textbf{3} \textit{Port Scan}   & 0.4444 & 0.1404 & 0.2133 \\
                     \midrule
                 \end{tabular}
                 \begin{tabular}{c c c}
                     \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
-                    0.9499 & 0.7885 & 0.9486 \\
+                    0.9386 & 0.7333 & 0.9353 \\
                 \end{tabular}
                 \vspace{0.3cm}
                 \caption{Test set report.}
@@ -69,7 +69,7 @@
     \subsection{Effect of Weighted Cross-Entropy}
     
         Training with the weighted loss produced smoother convergence and more balanced class performance (Figure~\ref{fig:loss_weighted}). 
-        Overall accuracy and weighted F1 decreased slightly (accuracy 0.9499 $\rightarrow$ 0.9221; weighted F1 0.9486 $\rightarrow$ 0.9325), while recall for underrepresented classes improved markedly — \textit{PortScan} recall rose from 0.2982 to 0.8421 and \textit{Brute Force} recall increased slightly from 0.9476 to 0.9545. 
+        Overall accuracy decreased slightly (accuracy 0.9386 $\rightarrow$ 0.9243), while recall for underrepresented classes improved markedly — \textit{PortScan} recall rose from 0.1404 to 0.8421 and \textit{Brute Force} recall increased slightly from 0.9091 to 0.9545. 
         This confirms that the weighted cross-entropy promotes fairness across classes by reducing bias toward dominant traffic types, at the cost of a small drop in global accuracy.
 
         \begin{figure}[H]
@@ -87,15 +87,15 @@
                     \toprule
                     \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
                     \midrule
-                    \textbf{0} \textit{Benign}      & 0.9790 & 0.9254 & 0.9515 \\
-                    \textbf{1} \textit{Brute Force} & 0.7358 & 0.9545 & 0.8311 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9574 & 0.9017 & 0.9287 \\
-                    \textbf{3} \textit{Port Scan}   & 0.2376 & 0.8421 & 0.3707 \\
+                    \textbf{0} \textit{Benign}      & 0.9800 & 0.9275 & 0.9530 \\
+                    \textbf{1} \textit{Brute Force} & 0.7398 & 0.9545 & 0.8336 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9459 & 0.9056 & 0.9253 \\
+                    \textbf{3} \textit{Port Scan}   & 0.2553 & 0.8421 & 0.3918 \\
                     \midrule
                 \end{tabular}
                 \begin{tabular}{c c c}
                     \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
-                    0.9221 & 0.7705 & 0.9325 \\
+                    0.9243 & 0.7759 & 0.9335 \\
                 \end{tabular}
                 \vspace{0.3cm}
                 \caption{Test set report.}
@@ -103,5 +103,5 @@
             \end{minipage}
         \end{figure}
 
-        \noindent In summary, applying a class-weighted loss increased sensitivity to underrepresented attacks, but this came at the expense of precision (\textit{PortScan} precision 0.5312 $\rightarrow$ 0.2376) and a small drop in overall metrics.
+        \noindent In summary, applying a class-weighted loss increased sensitivity to underrepresented attacks, but this came at the expense of precision (\textit{PortScan} precision 0.4444 $\rightarrow$ 0.2553).
         This experiment highlights the trade-off between improving per-class recall for minority classes and reducing precision and global performance.
