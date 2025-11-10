@@ -9590,7 +9590,8 @@ Epoch 100/100 - Train Loss: 0.3040, Val Loss: 0.2974
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h4 id="Q:-How-do-you-select-the-best-model-across-epochs?">Q: How do you select the best model across epochs?<a class="anchor-link" href="#Q:-How-do-you-select-the-best-model-across-epochs?">¶</a></h4><p>We selected the model with <strong>64 neurons</strong> as the best one because it showed the lowest validation loss and a stable convergence trend without overfitting.</p>
+<h4 id="Q:-How-do-you-select-the-best-model-across-epochs?">Q: How do you select the best model across epochs?<a class="anchor-link" href="#Q:-How-do-you-select-the-best-model-across-epochs?">¶</a></h4><p>Just looking the loss curves of the models across epochs, we can't select the best one directly, since all three models converge to similar validation loss values.
+So, we will check the classification reports on the validation set to select the best model.</p>
 </div>
 </div>
 </div>
