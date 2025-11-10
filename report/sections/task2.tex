@@ -13,7 +13,7 @@
     
         The training and validation loss curves (Figures~\ref{fig:loss_32}--\ref{fig:loss_128}) show consistent convergence for all models, with rapid loss reduction during early epochs followed by stable plateaus. 
         No overfitting was observed. 
-        All models converged to similar validation loss levels (\textasciitilde 0.295), with the 64-neuron model early stopping just before 100 epochs.
+        All models converged to similar validation loss levels (\textasciitilde 0.29), with the 64-neuron model early stopping at 100 epochs.
         
         \vspace{-0.2cm}
         
@@ -53,9 +53,9 @@
                     \toprule
                     \textbf{Model} & \textbf{Accuracy} & \textbf{F1 (macro avg)} \\
                     \midrule
-                    32 Neurons  & 0.8867 & 0.6769 \\
-                    64 Neurons  & 0.8943 & 0.7484 \\
-                    128 Neurons & 0.8819 & 0.6717 \\
+                    32 Neurons  & 0.8860 & 0.6761 \\
+                    64 Neurons  & 0.8860 & 0.6760 \\
+                    128 Neurons & 0.8802 & 0.6709 \\
                     \bottomrule
                 \end{tabular}
                 \vspace{0.3cm}
@@ -69,10 +69,10 @@
                     \toprule
                     \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
                     \midrule
-                    \textbf{0} \textit{Benign}      & 0.8987 & 0.9522 & 0.9247 \\
-                    \textbf{1} \textit{Brute Force} & 0.7353 & 0.1748 & 0.2825 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9869 & 0.8771 & 0.9288 \\
-                    \textbf{3} \textit{Port Scan}   & 0.8268 & 0.8907 & 0.8576 \\
+                    \textbf{0} \textit{Benign}      & 0.8872 & 0.9524 & 0.9187 \\
+                    \textbf{1} \textit{Brute Force} & 0.0000 & 0.0000 & 0.0000 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9854 & 0.8758 & 0.9274 \\
+                    \textbf{3} \textit{Port Scan}   & 0.8270 & 0.8918 & 0.8581 \\
                     \bottomrule
                 \end{tabular}
                 \vspace{0.3cm}
@@ -83,7 +83,7 @@
 
         \noindent Besides loss trajectories, validation metrics (Table~\ref{tab:linear-validation}) highlight performance differences among the three configurations.
         The \textbf{32} and \textbf{128} neuron models achieved good overall accuracy (\textasciitilde 0.88) but failed on the minority \textit{Brute Force} class (precision and recall = 0), primarily learning majority classes (\textit{Benign} and \textit{Port Scan}). 
-        The \textbf{64} neuron model delivered the best results (accuracy \textasciitilde 0.894, macro F1 \textasciitilde 0.748), correctly detecting all classes with balanced precision and recall. 
+        The \textbf{64}-neuron model matched this accuracy while slightly improving macro F1 (0.6760 vs. 0.6709 for 128 neurons) by better balancing class predictions.
         Considering both the loss trajectories and the validation metrics for this run, the \textbf{64}-neuron model was selected for detailed class-wise analysis.
 
     \subsection{Activation Function Study and Generalization}
@@ -108,15 +108,15 @@
                     \toprule
                     \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
                     \midrule
-                    \textbf{0} \textit{Benign}      & 0.9622 & 0.9660 & 0.9641 \\
+                    \textbf{0} \textit{Benign}      & 0.9593 & 0.9675& 0.9634 \\
                     \textbf{1} \textit{Brute Force} & 0.7768 & 0.9371 & 0.8494 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9972 & 0.9172 & 0.9555 \\
-                    \textbf{3} \textit{Port Scan}   & 0.9332 & 0.9216 & 0.9274 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9986 & 0.9043 & 0.9491 \\
+                    \textbf{3} \textit{Port Scan}   & 0.9380 & 0.9196 & 0.9287 \\
                     \midrule
                 \end{tabular}
                 \begin{tabular}{c c c}
                     \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
-                    0.9508 & 0.9241 & 0.9513 \\
+                    0.9498 & 0.9226 & 0.9502 \\
                 \end{tabular}
                 \vspace{0.3cm}
                 \caption{Validation set report.}
