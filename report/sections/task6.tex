@@ -5,9 +5,8 @@
 
     \subsection{Baseline Model}
 
-        The baseline deep model (\textit{AdamW}, no explicit regularization) shows consistent convergence with both training and validation losses stabilizing between 0.09-0.11 (Figure~\ref{fig:baseline_loss}). 
-        The validation loss remains slightly higher than the training loss, as expected, indicating good generalization and no signs of overfitting. 
-        Both curves plateau together, confirming stable learning with high validation accuracy ($\sim$96\%).
+    The baseline deep model (\textit{AdamW}, no explicit regularization) shows consistent convergence with both training and validation losses stabilizing (final Train Loss $\approx$ 0.1022, Val Loss $\approx$ 0.1188; see Figure~\ref{fig:baseline_loss}).
+    The validation loss remains slightly higher than the training loss, indicating good generalization rather than strong overfitting. Both curves plateau together. The final validation and test accuracies are high (Validation accuracy = 96.24\%, Test accuracy = 96.46\%).
 
         \begin{figure}[h]
             \centering
@@ -20,11 +19,11 @@
 
         Several regularization strategies were applied to investigate their impact on convergence and performance:
         \begin{itemize}
-            \item \textbf{Dropout (0.5)}: Increased generalization pressure but led to underfitting. The validation loss dropped below the training loss, and minority classes were ignored during prediction.
-            \item \textbf{Batch Normalization}: Produced unstable validation loss and irregular convergence, revealing sensitivity to batch statistics in tabular data.
-            \item \textbf{BatchNorm + Dropout (0.5)}: Excessive regularization; validation loss flattened prematurely, causing underfitting and low recall on minority classes.
-            \item \textbf{Weight Decay (1e-4)}: Improved stability and slightly enhanced generalization, maintaining accuracy close to the baseline while preventing minor overfitting trends.
-            \item \textbf{Weight Decay + BN + Dropout (0.5)}: Over-regularized; convergence slower and validation performance degraded.
+            \item \textbf{Dropout (0.5)}: Increased generalization pressure but produced weaker overall accuracy (Validation accuracy = 94.39\%, Test accuracy = 93.93\%). Final losses (Train $\approx$ 0.1462, Val $\approx$ 0.1339) show the validation loss can be lower than the training loss; the minority class (class 3) was not predicted (zero precision/recall / F1 = 0.0).
+            \item \textbf{Batch Normalization}: Produced less stable validation behaviour (final Train $\approx$ 0.1269, Val $\approx$ 0.2123) with a higher validation loss at the end of training, suggesting sensitivity to batch statistics on this tabular dataset. Validation/Test accuracies remained relatively high (Val = 95.51\%, Test = 95.73\%) but per-class recall for the minority class was degraded.
+            \item \textbf{BatchNorm + Dropout (0.5)}: Excessive regularization and underfitting (final Train $\approx$ 0.1922, Val $\approx$ 0.1737). Overall accuracy dropped (Val = 93.77\%, Test = 93.41\%) and the minority class was again ignored (F1 = 0.0).
+            \item \textbf{Weight Decay (1e-4)}: L2 regularization via weight decay yielded stable behaviour (final Train $\approx$ 0.1073, Val $\approx$ 0.1305) and a good balance between stability and minority-class performance. Validation/Test accuracies remained close to the baseline (Val = 95.68\%, Test = 95.86\%) and recall for the minority class improved compared to Dropout/Bn+Dropout.
+            \item \textbf{Weight Decay + BN + Dropout (0.5)}: Combination of strong regularizers led to underfitting (final Train $\approx$ 0.1987, Val $\approx$ 0.1708) and reduced accuracy (Val = 93.99\%, Test = 93.55\%); the minority class was again not detected in most runs.
         \end{itemize}
 
         \noindent Representative examples of the most relevant configurations are reported in Figures~\ref{fig:dropout}-\ref{fig:weightdecay_bn_dropout}.
@@ -44,7 +43,6 @@
                 \caption{Weight Decay (1e-4).}
                 \label{fig:weightdecay}
             \end{subfigure}
-            \vspace{4pt}
             \begin{subfigure}[b]{0.48\linewidth}
                 \centering
                 \includegraphics[width=\linewidth]{images/task6/BatchNorm_Dropout_0.5_loss_curve.png}
@@ -64,6 +62,18 @@
 
     \subsection{Final Observations}
 
-        Among all tested setups, the \textbf{AdamW optimizer with mild weight decay ($1\times10^{-4}$)} achieved the best balance between stability and performance, reaching 96.3\% validation and test accuracy. 
-        Stronger regularization methods such as Dropout or BatchNorm caused underfitting and reduced recall on minority classes, confirming that excessive normalization can harm tabular network training. 
-        Hence, light weight decay was identified as the most effective regularization approach for this task.
+        The experiments show a clear trade-off between overall performance (accuracy / weighted metrics) and robustness on the rare class.
+
+        - The plain \textbf{AdamW} baseline (no extra explicit regularization) produced the highest overall scores in these runs (Validation = 96.24\%, Test = 96.46\%) and also the best minority-class F1 among the configurations tested. 
+        - \textbf{AdamW + light weight decay ($1\times10^{-4}$)} yielded slightly lower overall accuracy but improved stability and in some cases the minority-class recall compared to aggressive normalization schemes.
+        - Stronger regularizers (Dropout 0.5, BatchNorm combined with Dropout) tended to underfit this tabular task: they reduced overall accuracy and frequently led to the minority class being ignored (zero precision/recall in several runs).
+
+        If the project's primary objective is overall accuracy and weighted F1, the \textbf{AdamW baseline} is the preferred choice. If detecting the rare attack class is more important, prefer targeted strategies rather than blunt regularization:
+        \begin{itemize}
+            \item use class-weighted loss or focal loss tuned for the rare class,
+            \item apply oversampling (or synthetic augmentation) of the minority class or class-balanced sampling in the DataLoader,
+            \item tune small weight decay values (e.g., grid search from $1\times10^{-5}$ to $1\times10^{-3}$) together with class weighting,
+            \item consider ensembling multiple seeds / checkpoints and per-class threshold tuning at inference time.
+        \end{itemize}
+
+        These targeted interventions typically improve minority-class detection without sacrificing the overall performance achieved by the AdamW baseline.
