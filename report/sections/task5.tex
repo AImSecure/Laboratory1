@@ -6,35 +6,35 @@ In this task, the Feed Forward Neural Network (FFNN) was extended to deeper conf
 Each model was trained for up to 50 epochs. All exhibited smooth and consistent convergence, as both training and validation losses decreased stably before plateauing, indicating successful optimization without overfitting (see Figure~\ref{fig:deep_loss_curve}).
 
 \begin{figure}[H]
+    \centering
+        \begin{minipage}{0.48\textwidth}
             \centering
-            \begin{minipage}{0.48\textwidth}
-                \centering
-                \includegraphics[width=0.75\linewidth]{images/task5/deep_L5_widths_32_32_8_16_16_loss_curve.png}
-                \caption{Training and validation losses for the best-performing architecture.}
-                \label{fig:deep_loss_curve}
-            \end{minipage}
-            \hfill
-            \begin{minipage}{0.48\textwidth}
-                \centering
-                \begin{tabular}{lcccc}
-                    \toprule
-                    \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
-                    \midrule
-                    \textbf{0} \textit{Benign}      & 0.9664 & 0.9805& 0.9734 \\
-                    \textbf{1} \textit{Brute Force} & 0.8390 & 0.9476 & 0.8900 \\
-                    \textbf{2} \textit{DoS Hulk}    & 0.9858 & 0.8952 & 0.9383 \\
-                    \textbf{3} \textit{Port Scan}   & 0.8571 & 0.6316 & 0.7273 \\
-                    \midrule
-                \end{tabular}
-                \begin{tabular}{c c c}
-                    \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
-                    0.9593 & 0.8822 & 0.9589 \\
-                \end{tabular}
-                \vspace{0.3cm}
-                \captionof{table}{Test set report.}
-                \label{tab:relu_64-metrics}
-            \end{minipage}
-        \end{figure}
+            \includegraphics[width=0.75\linewidth]{images/task5/deep_L5_widths_32_32_8_16_16_loss_curve.png}
+            \caption{Training and validation losses for the best-performing architecture.}
+            \label{fig:deep_loss_curve}
+        \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+            \midrule
+            \textbf{0} \textit{Benign}      & 0.9664 & 0.9805 & 0.9734 \\
+            \textbf{1} \textit{Brute Force} & 0.8390 & 0.9476 & 0.8900 \\
+            \textbf{2} \textit{DoS Hulk}    & 0.9858 & 0.8952 & 0.9383 \\
+            \textbf{3} \textit{Port Scan}   & 0.8571 & 0.6316 & 0.7273 \\
+            \midrule
+        \end{tabular}
+        \begin{tabular}{c c c}
+            \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+            0.9593 & 0.8822 & 0.9589 \\
+        \end{tabular}
+        \vspace{0.3cm}
+        \captionof{table}{Test set report.}
+        \label{tab:L5_widths_32_32_8_16_16-metrics}
+    \end{minipage}
+\end{figure}
 
 The architecture \texttt{deep\_L5\_widths\_32\_32\_8\_16\_16} achieved the best results on the validation set with an accuracy of \textbf{95.86\%}, weighted F1 of \textbf{0.9581}, and macro F1 of \textbf{0.8623}. This model also stood out as the only one capable of effectively detecting the minority class (class 3, F1 = 0.64), while maintaining high performance on the dominant classes. On the test set, it achieved a \textbf{95.93\%} accuracy and macro F1 of \textbf{0.8822}, confirming good generalization with improved minority-class recall (0.7273).
 
@@ -45,20 +45,55 @@ To analyze the impact of batch size, the best-performing architecture was retrai
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{images/task5/64_loss_curve.png}
-    \caption{Training and validation loss with batch size 64.}
-    \label{fig:batch_loss_curve}
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=0.75\linewidth]{images/task5/64_loss_curve.png}
+            \caption{Training and validation loss with batch size 64.}
+            \label{fig:batch_loss_curve}
+        \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+            \midrule
+            \textbf{0} \textit{Benign}      & 0.9633 & 0.9864 & 0.9747 \\
+            \textbf{1} \textit{Brute Force} & 0.9276 & 0.9439 & 0.9357 \\
+            \textbf{2} \textit{DoS Hulk}    & 0.9871 & 0.8915 & 0.9369 \\
+            \textbf{3} \textit{Port Scan}   & 0.4130 & 0.3333 & 0.3689 \\
+            \midrule
+        \end{tabular}
+        \begin{tabular}{c c c}
+            \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+            0.9591 & 0.8040 & 0.9580 \\
+        \end{tabular}
+        \vspace{0.3cm}
+        \captionof{table}{Validation set report.}
+        \label{tab:batch_64-metrics}
+    \end{minipage}
 \end{figure}
 
 \noindent
 The summarized validation results were:
 
-\begin{itemize}
-    \item Batch 4: Accuracy 0.9021, Macro F1 0.4864, Class 3 F1 0.0000.
-    \item Batch 64: Accuracy 0.9591, Macro F1 0.8040, Class 3 F1 0.3689.
-    \item Batch 256: Accuracy 0.9490, Macro F1 0.6888, Class 3 F1 0.0000.
-    \item Batch 1024: Accuracy 0.8970, Macro F1 0.4629, Class 3 F1 0.0000.
-\end{itemize}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l c c c}
+        \toprule
+        \textbf{Batch} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{Class 3 F1} \\
+        \midrule
+        4    & 0.9021 & 0.4864 & 0.0000 \\
+        64   & 0.9591 & 0.8040 & 0.3689 \\
+        256  & 0.9490 & 0.6888 & 0.0000 \\
+        1024 & 0.8970 & 0.4629 & 0.0000 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Validation results for different batch sizes.}
+    \label{tab:batch_sizes_summary}
+    \vspace{-0.5cm}
+\end{table}
+
 
 The optimal configuration was found at batch size 64. Very small batches introduced excessive gradient noise, harming convergence, while very large batches led to overly smooth gradient estimates, biasing the model toward majority classes. Moderate batch sizes balanced noise and stability, allowing minority class learning. Training time decreased with larger batches due to fewer updates per epoch: 75.4 s (batch 4) vs. 3.1 s (batch 256).
 
@@ -67,10 +102,35 @@ The optimizers compared were SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{images/task5/AdamW_loss_curve.png}
-    \caption{Loss curve of the AdamW optimizer showing stable and rapid convergence.}
-    \label{fig:optimizer_loss_curve}
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=0.75\linewidth]{images/task5/AdamW_loss_curve.png}
+            \caption{Loss curve of the AdamW optimizer showing stable and rapid convergence.}
+            \label{fig:AdamW_loss_curve}
+        \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+            \midrule
+            \textbf{0} \textit{Benign}      & 0.9564 & 0.9867 & 0.9713 \\
+            \textbf{1} \textit{Brute Force} & 0.9308 & 0.9439 & 0.9373 \\
+            \textbf{2} \textit{DoS Hulk}    & 0.9824 & 0.8643 & 0.9196 \\
+            \textbf{3} \textit{Port Scan}   & 0.3846 & 0.2632 & 0.3125 \\
+            \midrule
+        \end{tabular}
+        \begin{tabular}{c c c}
+            \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+            0.9537 & 0.7852 & 0.9519 \\
+        \end{tabular}
+        \vspace{0.3cm}
+        \captionof{table}{Validation set report.}
+        \label{tab:AdamW-metrics}
+    \end{minipage}
 \end{figure}
+
 
 SGD and its momentum variants often collapsed to majority-class predictions, showing low macro F1 (\textasciitilde 0.21–0.46). In contrast, AdamW achieved \textbf{accuracy 0.9537}, \textbf{macro F1 0.7852}, and detected all classes. It also provided the fastest convergence with minimal oscillation. Although slightly slower in wall-clock time (6.8 s vs. 5.3 s for SGD), AdamW produced the most balanced and generalizable model.
 
@@ -79,18 +139,49 @@ With AdamW and batch size 64 fixed, several learning rates and epoch limits were
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{images/task5/lr_0.005_epochs_200_loss_curve.png}
-    \caption{Training and validation losses for the best model (\texttt{lr=0.005}, 200 epochs).}
-    \label{fig:lr_loss_curve}
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=0.75\linewidth]{images/task5/lr_0.005_epochs_200_loss_curve.png}
+            \caption{Training and validation losses for the best model (\texttt{lr=0.005}, 200 epochs).}
+            \label{fig:lr_loss_curve}
+        \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+            \midrule
+            \textbf{0} \textit{Benign}      & 0.9664 & 0.9873 & 0.9767 \\
+            \textbf{1} \textit{Brute Force} & 0.9281 & 0.9476 & 0.9377 \\
+            \textbf{2} \textit{DoS Hulk}    & 0.9927 & 0.8797 & 0.9328 \\
+            \textbf{3} \textit{Port Scan}   & 0.5000 & 0.5789 & 0.5366 \\
+            \midrule
+        \end{tabular}
+        \begin{tabular}{c c c}
+            \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+            0.9611 & 0.8460 & 0.9611 \\
+        \end{tabular}
+        \vspace{0.3cm}
+        \captionof{table}{Test set report.}
+        \label{tab:lr-metrics}
+    \end{minipage}
 \end{figure}
 
 The final test set performance was:
-\begin{itemize}
-    \item Accuracy: 0.9611
-    \item Weighted F1: 0.9611
-    \item Macro F1: 0.8460
-    \item Minority class (3) F1: 0.5366
-\end{itemize}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c c c c}
+        \toprule
+        \textbf{Accuracy} & \textbf{Weighted F1} & \textbf{Macro F1} & \textbf{Minority class (3) F1} \\
+        \midrule
+        0.9611 & 0.9611 & 0.8460 & 0.5366 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Final test set performance.}
+    \label{tab:final_test_performance}
+    \vspace{-0.5cm}
+\end{table}
 
 This configuration provided the best trade-off between overall accuracy and minority-class learning, confirming that moderate learning rates coupled with adaptive optimization and early stopping lead to stable, high-performing networks.
 
