@@ -3,20 +3,48 @@
 % Section Title
 \section{TASK 6 --- OVERFITTING AND REGULARIZATION TECHNIQUES} \label{sec:overfitting-regularization}
 
+    In this task, various regularization techniques were explored to mitigate overfitting, starting from a new baseline deep model with 6 layers ([256,128,64,32,16,8]), ReLU activations and the AdamW optimizer.
+
     \subsection{Baseline Model}
 
-    The baseline deep model (\textit{AdamW}, no explicit regularization) shows consistent convergence with both training and validation losses stabilizing (final Train Loss $\approx$ 0.1022, Val Loss $\approx$ 0.1188; see Figure~\ref{fig:baseline_loss}).
-    The validation loss remains slightly higher than the training loss, indicating good generalization rather than strong overfitting. Both curves plateau together. The final validation and test accuracies are high (Validation accuracy = 96.24\%, Test accuracy = 96.46\%).
+        % TODO: check and update
+        The baseline deep model (\textit{AdamW}, no explicit regularization) shows consistent convergence with both training and validation losses stabilizing (final Train Loss $\approx$ 0.1022, Val Loss $\approx$ 0.1188; see Figure~\ref{fig:baseline_loss}).
+        The validation loss remains slightly higher than the training loss, indicating good generalization rather than strong overfitting. Both curves plateau together. The final validation and test accuracies are high (Validation accuracy = 96.24\%, Test accuracy = 96.46\%).
 
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.65\linewidth]{images/task6/Baseline_loss_curve.png}
-            \caption{Training and validation loss curves for the baseline model (AdamW).}
-            \label{fig:baseline_loss}
+            \begin{minipage}{0.48\textwidth}
+                \centering
+                \includegraphics[width=\linewidth]{images/task6/Baseline_loss_curve.png}
+                \caption{Loss curves for the baseline model (AdamW).}
+                \label{fig:baseline_loss}
+            \end{minipage}
+            \hfill
+            \begin{minipage}{0.48\textwidth}
+                \centering
+                \begin{tabular}{lcccc}
+                    \toprule
+                    \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+                    \midrule
+                    \textbf{0} \textit{Benign}      & 0.9669 & 0.9843 & 0.9755 \\
+                    \textbf{1} \textit{Brute Force} & 0.9310 & 0.9474 & 0.9391 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9789 & 0.8992 & 0.9374 \\
+                    \textbf{3} \textit{Port Scan}   & 0.6296 & 0.5965 & 0.6126 \\
+                    \midrule
+                \end{tabular}
+                \begin{tabular}{c c c}
+                    \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+                    0.9624 & 0.8662 & 0.9620 \\
+                \end{tabular}
+                \vspace{0.3cm}
+                \captionof{table}{Validation set report.}
+                \label{tab:lr-metrics}
+            \end{minipage}
         \end{figure}
 
     \subsection{Effect of Normalization and Regularization}
 
+        % TODO: check and update
         Several regularization strategies were applied to investigate their impact on convergence and performance:
         \begin{itemize}
             \item \textbf{Dropout (0.5)}: Increased generalization pressure but produced weaker overall accuracy (Validation accuracy = 94.39\%, Test accuracy = 93.93\%). Final losses (Train $\approx$ 0.1462, Val $\approx$ 0.1339) show the validation loss can be lower than the training loss; the minority class (class 3) was not predicted (zero precision/recall / F1 = 0.0).
@@ -26,42 +54,43 @@
             \item \textbf{Weight Decay + BN + Dropout (0.5)}: Combination of strong regularizers led to underfitting (final Train $\approx$ 0.1987, Val $\approx$ 0.1708) and reduced accuracy (Val = 93.99\%, Test = 93.55\%); the minority class was again not detected in most runs.
         \end{itemize}
 
+        % TODO: check and update
         \noindent Representative examples of the most relevant configurations are reported in Figures~\ref{fig:dropout}-\ref{fig:weightdecay_bn_dropout}.
 
         \begin{figure}[h]
             \centering
-            \begin{subfigure}[b]{0.48\linewidth}
-                \centering
-                \includegraphics[width=\linewidth]{images/task6/Dropout_0.5_loss_curve.png}
-                \caption{Dropout (0.5).}
-                \label{fig:dropout}
-            \end{subfigure}
-            \hfill
-            \begin{subfigure}[b]{0.48\linewidth}
+            \begin{minipage}{0.48\textwidth}
                 \centering
                 \includegraphics[width=\linewidth]{images/task6/WeightDecay_1e-4_loss_curve.png}
-                \caption{Weight Decay (1e-4).}
-                \label{fig:weightdecay}
-            \end{subfigure}
-            \begin{subfigure}[b]{0.48\linewidth}
-                \centering
-                \includegraphics[width=\linewidth]{images/task6/BatchNorm_Dropout_0.5_loss_curve.png}
-                \caption{BatchNorm + Dropout (0.5).}
-                \label{fig:batchnorm_dropout}
-            \end{subfigure}
+                \caption{Loss curves using Weight Decay (1e-4).}
+                \label{fig:baseline_loss}
+            \end{minipage}
             \hfill
-            \begin{subfigure}[b]{0.48\linewidth}
+            \begin{minipage}{0.48\textwidth}
                 \centering
-                \includegraphics[width=\linewidth]{images/task6/WeightDecay_1e-4_BN_Dropout_0.5_loss_curve.png}
-                \caption{Weight Decay + BN + Dropout (0.5).}
-                \label{fig:weightdecay_bn_dropout}
-            \end{subfigure}
-            \caption{Loss evolution across selected regularization strategies.}
-            \label{fig:reg_comparison}
+                \begin{tabular}{lcccc}
+                    \toprule
+                    \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+                    \midrule
+                    \textbf{0} \textit{Benign}      & 0.9695 & 0.9787 & 0.9741 \\
+                    \textbf{1} \textit{Brute Force} & 0.9340 & 0.9439 & 0.9389 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9588 & 0.9031 & 0.9301 \\
+                    \textbf{3} \textit{Port Scan}   & 0.3881 & 0.4561 & 0.4194 \\
+                    \midrule
+                \end{tabular}
+                \begin{tabular}{c c c}
+                    \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+                    0.9568 & 0.8156 & 0.9572 \\
+                \end{tabular}
+                \vspace{0.3cm}
+                \captionof{table}{Validation set report.}
+                \label{tab:lr-metrics}
+            \end{minipage}
         \end{figure}
 
     \subsection{Final Observations}
 
+        % TODO: check and update
         The experiments show a clear trade-off between overall performance (accuracy / weighted metrics) and robustness on the rare class.
 
         - The plain \textbf{AdamW} baseline (no extra explicit regularization) produced the highest overall scores in these runs (Validation = 96.24\%, Test = 96.46\%) and also the best minority-class F1 among the configurations tested. 
