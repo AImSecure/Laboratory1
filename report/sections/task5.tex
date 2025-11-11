@@ -1,68 +1,98 @@
-% task5.tex
+\section{Task 5 --- DEEP NEURAL NETWORKS, BATCH SIZE, AND OPTIMIZERS} \label{sec:task5}
 
-% Section Title
-\section{TASK 5 --- DEEP FF NEURAL NETWORK (ARCHITECTURAL AND OPTIMIZER COMPARISON)} \label{sec:deep-nn}
+\subsection{Architecture Depth Analysis}
+In this task, the Feed Forward Neural Network (FFNN) was extended to deeper configurations to evaluate the effect of architectural depth on classification performance. Six architectures were trained with depths ranging from three to five hidden layers, with variable neuron widths per layer (2–32). All models used the ReLU activation, the AdamW optimizer (\texttt{lr=5e-4}), batch size 64, and early stopping with \texttt{patience=20} and \texttt{min\_delta=1e-5}. 
 
-    \subsection{Model Architectures and Convergence}
+Each model was trained for up to 50 epochs. All exhibited smooth and consistent convergence, as both training and validation losses decreased stably before plateauing, indicating successful optimization without overfitting (see Figure~\ref{fig:deep_loss_curve}).
 
-        Deeper Feed-Forward Neural Networks (FFNNs) were trained to assess the influence of network depth, width, batch size, and optimizer on convergence and generalization. 
-        All architectures used ReLU activations, AdamW or SGD-based optimizers, and were trained for 50 epochs. 
-        Across all configurations, both training and validation losses showed smooth and consistent convergence without divergence, confirming stable optimization.
-
-    \subsection{Architecture Selection}
-
-        Among the evaluated models, the three-layer network with widths [32, 16, 8] achieved the best validation performance (accuracy = 95.55\%, macro F1 = 0.80). 
-        Deeper configurations achieved slightly higher accuracy but exhibited poorer macro F1, showing weaker handling of minority classes. 
-        Hence, the [32, 16, 8] model was selected for further experiments as it offered the best trade-off between complexity and generalization.
-
-    \subsection{Test Performance}
-
-        The selected deep model achieved high test performance: accuracy = 0.953, weighted F1 = 0.952, and macro F1 = 0.828. 
-        The model generalized well to unseen data, maintaining strong accuracy across all major classes, although \textit{PortScan} remained the most challenging (F1 = 0.50).
-
-    \subsection{Batch Size Effects}
-    
-        Batch sizes of 4, 64, 256, and 1024 were compared. 
-        Smaller batches (4-64) achieved higher validation accuracy (compared to larger batches) (up to 94.9\%) and macro F1 (\textasciitilde 0.69), while larger batches led to underfitting (accuracy \textasciitilde 89.7\%). 
-        This occurs because smaller batches introduce stochasticity in gradient updates, enhancing generalization. 
-        Considering both stability and efficiency, a batch size of 64 was adopted for subsequent runs.
-       
-        \begin{figure}[h]
+\begin{figure}[H]
             \centering
-            \begin{subfigure}[b]{0.48\linewidth}
+            \begin{minipage}{0.48\textwidth}
                 \centering
-                \includegraphics[width=0.9\linewidth]{images/task5/deep_L3_widths_32_16_8_loss_curve.png}
-                \caption{Train and val loss of the best deep model.}
-                \label{fig:deep_L3}
-            \end{subfigure}
+                \includegraphics[width=0.75\linewidth]{images/task5/deep_L5_widths_32_32_8_16_16_loss_curve.png}
+                \caption{Training and validation losses for the best-performing architecture.}
+                \label{fig:deep_loss_curve}
+            \end{minipage}
             \hfill
-            \begin{subfigure}[b]{0.48\linewidth}
+            \begin{minipage}{0.48\textwidth}
                 \centering
-                \includegraphics[width=0.9\linewidth]{images/task5/64_loss_curve.png}
-                \caption{Loss evolution for the 64 batch-size configuration.}
-                \label{fig:batch_64}
-            \end{subfigure}
-            \label{fig:loss_curves}
+                \begin{tabular}{lcccc}
+                    \toprule
+                    \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+                    \midrule
+                    \textbf{0} \textit{Benign}      & 0.9664 & 0.9805& 0.9734 \\
+                    \textbf{1} \textit{Brute Force} & 0.8390 & 0.9476 & 0.8900 \\
+                    \textbf{2} \textit{DoS Hulk}    & 0.9858 & 0.8952 & 0.9383 \\
+                    \textbf{3} \textit{Port Scan}   & 0.8571 & 0.6316 & 0.7273 \\
+                    \midrule
+                \end{tabular}
+                \begin{tabular}{c c c}
+                    \textbf{Accuracy} &  \textbf{Macro F1} & \textbf{Weighted F1} \\
+                    0.9593 & 0.8822 & 0.9589 \\
+                \end{tabular}
+                \vspace{0.3cm}
+                \captionof{table}{Test set report.}
+                \label{tab:relu_64-metrics}
+            \end{minipage}
         \end{figure}
 
-    \subsection{Optimizer Comparison}
+The architecture \texttt{deep\_L5\_widths\_32\_32\_8\_16\_16} achieved the best results on the validation set with an accuracy of \textbf{95.86\%}, weighted F1 of \textbf{0.9581}, and macro F1 of \textbf{0.8623}. This model also stood out as the only one capable of effectively detecting the minority class (class 3, F1 = 0.64), while maintaining high performance on the dominant classes. On the test set, it achieved a \textbf{95.93\%} accuracy and macro F1 of \textbf{0.8822}, confirming good generalization with improved minority-class recall (0.7273).
 
-        Different optimizers were evaluated: SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. 
-        All converged, but AdamW displayed the fastest and most stable loss decrease, reaching the lowest validation loss. 
-        SGD without momentum converged slowly, while momentum improved convergence speed progressively. 
-        In terms of training time, plain SGD was fastest due to fewer computations, while AdamW was slower but achieved superior accuracy and F1 performance.
+The results show that deeper architectures yield better feature abstraction and improved robustness, particularly for imbalanced datasets. The minority class improved significantly without degrading the performance on the majority classes, suggesting well-formed and stable decision boundaries.
 
-        \begin{figure}[h]
-            \centering
-            \includegraphics[width=0.65\linewidth]{images/task5/AdamW_loss_curve.png}
-            \caption{Loss curve of the AdamW optimizer, showing faster and smoother convergence.}
-            \label{fig:adamw_loss}
-        \end{figure}
+\subsection{Effect of Batch Size}
+To analyze the impact of batch size, the best-performing architecture was retrained with batch sizes $\{4, 64, 256, 1024\}$. Validation performance varied significantly (see Figure~\ref{fig:batch_loss_curve}).
 
-    \subsection{Learning Rate and Final Evaluation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/task5/64_loss_curve.png}
+    \caption{Training and validation loss with batch size 64.}
+    \label{fig:batch_loss_curve}
+\end{figure}
 
-        With AdamW and the [32, 16, 8] architecture, fine-tuning the learning rate confirmed stable convergence and robust test results. 
-        The final test classification report showed accuracy = 93.3\% and weighted F1 = 0.93, with particularly strong detection of \textit{Benign} and \textit{Brute Force} traffic. 
-        These results validate the chosen optimizer and architecture as the most effective configuration for balanced performance and generalization.
-        
-        \noindent Overall, this task highlights the trade-offs among network depth, batch size, and optimizer design, emphasizing that moderate depth and adaptive optimization yield the best balance between performance and efficiency.
+\noindent
+The summarized validation results were:
+
+\begin{itemize}
+    \item Batch 4: Accuracy 0.9021, Macro F1 0.4864, Class 3 F1 0.0000.
+    \item Batch 64: Accuracy 0.9591, Macro F1 0.8040, Class 3 F1 0.3689.
+    \item Batch 256: Accuracy 0.9490, Macro F1 0.6888, Class 3 F1 0.0000.
+    \item Batch 1024: Accuracy 0.8970, Macro F1 0.4629, Class 3 F1 0.0000.
+\end{itemize}
+
+The optimal configuration was found at batch size 64. Very small batches introduced excessive gradient noise, harming convergence, while very large batches led to overly smooth gradient estimates, biasing the model toward majority classes. Moderate batch sizes balanced noise and stability, allowing minority class learning. Training time decreased with larger batches due to fewer updates per epoch: 75.4 s (batch 4) vs. 3.1 s (batch 256).
+
+\subsection{Effect of Optimizer}
+The optimizers compared were SGD, SGD with momentum (0.1, 0.5, 0.9), and AdamW. Results confirmed that optimizer choice strongly affects both convergence rate and class balance (Figure~\ref{fig:optimizer_loss_curve}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/task5/AdamW_loss_curve.png}
+    \caption{Loss curve of the AdamW optimizer showing stable and rapid convergence.}
+    \label{fig:optimizer_loss_curve}
+\end{figure}
+
+SGD and its momentum variants often collapsed to majority-class predictions, showing low macro F1 (\textasciitilde 0.21–0.46). In contrast, AdamW achieved \textbf{accuracy 0.9537}, \textbf{macro F1 0.7852}, and detected all classes. It also provided the fastest convergence with minimal oscillation. Although slightly slower in wall-clock time (6.8 s vs. 5.3 s for SGD), AdamW produced the most balanced and generalizable model.
+
+\subsection{Learning Rate and Epochs Exploration}
+With AdamW and batch size 64 fixed, several learning rates and epoch limits were tested. The best configuration used \texttt{lr = 0.005} and \texttt{max\_epochs = 200}, with early stopping at epoch 53. This setup improved minority-class recognition and achieved the highest macro F1 and overall accuracy. The corresponding loss curve is shown in Figure~\ref{fig:lr_loss_curve}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/task5/lr_0.005_epochs_200_loss_curve.png}
+    \caption{Training and validation losses for the best model (\texttt{lr=0.005}, 200 epochs).}
+    \label{fig:lr_loss_curve}
+\end{figure}
+
+The final test set performance was:
+\begin{itemize}
+    \item Accuracy: 0.9611
+    \item Weighted F1: 0.9611
+    \item Macro F1: 0.8460
+    \item Minority class (3) F1: 0.5366
+\end{itemize}
+
+This configuration provided the best trade-off between overall accuracy and minority-class learning, confirming that moderate learning rates coupled with adaptive optimization and early stopping lead to stable, high-performing networks.
+
+\subsection{Summary of Findings}
+The deep architecture \texttt{L5\_32\_32\_8\_16\_16} with AdamW optimizer, batch size 64, and learning rate 0.005 achieved the most balanced and generalizable results. Depth improved expressiveness; AdamW enabled stable convergence and robust minority detection. Proper batch sizing and learning rate tuning were crucial in mitigating the effects of class imbalance and preventing underfitting or overfitting.
