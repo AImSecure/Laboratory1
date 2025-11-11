@@ -3,24 +3,29 @@
 % Section Title
 \section{CONCLUSIONS} \label{sec:conclusions}
 
-    % TODO: check and update the whole conclusion
+This laboratory comprehensively explored the design, optimization, and evaluation of Feed-Forward Neural Networks (FFNNs) for intrusion detection using the CICIDS2017 dataset. The six progressive tasks provided a systematic framework to address key challenges in data preprocessing, feature bias mitigation, class imbalance, model architecture, and regularization. The following summarizes the main findings from each stage and their broader implications.
 
-    This laboratory work systematically explored the design and optimization of Feed-Forward Neural Networks (FFNNs) for network intrusion detection using the CICIDS2017 dataset. 
-    Starting from data preprocessing, each task progressively refined the model architecture, training strategies, and evaluation procedures to ensure robustness and generalization.
+\begin{itemize}
 
-    \noindent The initial data analysis revealed strong class imbalance and feature biases, particularly in the \textit{Destination Port} attribute, which introduced spurious correlations in model learning. 
-    After thorough cleaning, normalization, and bias mitigation, the dataset became suitable for supervised training.
+\item{\textbf{Task 1 — Data Analysis and Preprocessing}} \\
+The initial task established a robust data foundation. Cleaning removed 2,121 redundant or invalid entries, ensuring data integrity. Exploratory analysis confirmed strong class imbalance and the presence of heavy-tailed distributions. Normalization via \texttt{StandardScaler} stabilized model training while preserving interpretability. This stage emphasized that well-structured, standardized input data is essential for stable convergence and reliable evaluation.
 
-    \noindent The shallow network experiments demonstrated that increasing the number of neurons improved representational capacity, with the 64-neuron model using ReLU activation achieving the best balance between convergence speed and performance. 
-    Subsequent analyses confirmed that this model generalized well to unseen data. 
-    Removing the biased \textit{Destination Port} feature exposed the model's dependency on non-generalizable patterns, validating the need for careful feature selection.
+\item{\textbf{Task 2 — Shallow Feed-Forward Neural Network}} \\
+The single-layer FFNN served as a baseline for architectural exploration. Among hidden sizes of \{32, 64, 128\}, the 64-neuron configuration with ReLU activation achieved the best compromise between complexity and performance, reaching $\approx95\%$ accuracy and a macro F1 of 0.92. The activation analysis revealed that ReLU substantially enhanced minority-class learning, correcting the failure observed with linear activation. This demonstrated how non-linear transformations are crucial for capturing subtle attack patterns.
 
-    \noindent The introduction of a class-weighted loss improved fairness by enhancing recall for minority classes at the expense of slight accuracy reduction. 
-    Deep architectures further improved macro F1-score and accuracy, with the three-layer [32, 16, 8] configuration and AdamW optimizer providing the best trade-off between complexity, efficiency, and generalization. 
-    Among the tested optimizers, AdamW exhibited the fastest and most stable convergence, while smaller batch sizes yielded better generalization. 
+\item{\textbf{Task 3 — Impact of Specific Features (Destination Port)}} \\
+This task exposed a critical dataset bias: all Brute Force samples shared the same destination port (80). When this feature was perturbed (changed to 8080), the model’s Brute Force F1 dropped from 0.85 to 0.08, confirming an overreliance on non-generalizable cues. Removing the feature corrected this inductive bias but also revealed redundancy among PortScan samples, reducing their count from 5,000 to 285. This analysis underscored the importance of feature independence and dataset diversity to avoid misleading correlations that undermine generalization.
 
-    \noindent Finally, experiments on overfitting and regularization confirmed that the baseline model trained with AdamW and mild weight decay (\(1 \times 10^{-4}\)) achieved the best overall performance. 
-    Aggressive techniques such as Dropout or Batch Normalization led to underfitting, indicating that excessive regularization is not optimal for tabular intrusion detection data.
+\item{\textbf{Task 4 — Impact of the Loss Function (Class Weighting)}} \\
+After removing the biased feature, class imbalance became more pronounced. Implementing a class-weighted cross-entropy loss improved recall for minority classes—especially PortScan (recall $0.14 \rightarrow 0.84$)—with a limited accuracy drop ($0.94 \rightarrow 0.92$). This experiment highlighted the trade-off between global accuracy and fairness across classes, demonstrating that weighting the loss function is an effective yet delicate approach to improving attack diversity detection.
 
-    \noindent Overall, this study highlights the importance of balanced preprocessing, careful hyperparameter tuning, and moderate regularization in designing neural networks for intrusion detection. 
-    The developed FFNN pipeline achieved stable convergence, high accuracy, and good generalization while maintaining interpretability and computational efficiency, providing a solid foundation for future extensions such as convolutional or recurrent models for sequence-based traffic analysis.
+\item{\textbf{Task 5 — Deep Networks, Batch Size, and Optimizers}} \\
+Deeper architectures enhanced representation power and stability. The five-layer model ([32, 32, 8, 16, 16]) achieved the best results: accuracy $95.9\%$, macro F1 $0.88$, and improved minority-class F1 ($0.73$). Batch size analysis revealed that $64$ provided the optimal balance between gradient stability and noise-driven exploration, while optimizer comparisons showed \texttt{AdamW} clearly outperforming SGD variants by achieving faster, smoother convergence and balanced predictions. A learning rate of $0.005$ combined with early stopping yielded the most robust generalization, confirming the value of moderate adaptivity in learning dynamics.
+
+\item{\textbf{Task 6 — Overfitting and Regularization}} \\
+The final task assessed regularization strategies. The new baseline deep model already demonstrated strong generalization (accuracy $96.4\%$). Light weight decay ($10^{-4}$) provided the best trade-off between accuracy and stability, while stronger methods—Batch Normalization and Dropout—caused underfitting and class collapse. These results indicated that excessive regularization can degrade performance on tabular intrusion data, where the learning signal is already sparse and noise-sensitive.
+
+\end{itemize}
+
+\subsection*{Final Reflection}
+The findings demonstrate that integrating bias mitigation, adaptive optimization, and balanced loss design can substantially enhance intrusion detection reliability. The optimized FFNN achieved stable convergence, high interpretability, and strong minority-class recall without excessive complexity. Such improvements contribute directly to the development of more resilient Intrusion Detection Systems (IDS), capable of recognizing both prevalent and rare attack types in real-world network environments.
