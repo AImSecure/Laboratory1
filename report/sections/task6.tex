@@ -91,5 +91,6 @@
         \textbf{AdamW + light weight decay ($1\times10^{-4}$)} yielded slightly lower overall accuracy but improved stability and in some cases the minority-class recall compared to aggressive normalization schemes.
         Stronger regularizers (Dropout 0.5, BatchNorm combined with Dropout) tended to underfit this tabular task: they reduced overall accuracy and frequently led to the minority class being ignored (zero precision/recall in several runs).
 
+        \noindent
         If the project's primary objective is overall accuracy and weighted F1, the \textbf{baseline} is the preferred choice. 
         However, if improving minority-class detection is critical, a mild regularization strategy like \textbf{Weight Decay (1e-4)} may be beneficial, despite a small drop in overall accuracy.
